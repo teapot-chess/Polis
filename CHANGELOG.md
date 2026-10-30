@@ -19,6 +19,7 @@ tagged so that a version can be skimmed:
 
 - [Change] **The page fits a 3.5 inch screen.** A Polis box with a 480x320 panel (or 320x480 upright) got a desktop page: wide margins, a footer of links 22 pixels tall, checkboxes smaller than the stylus, and buttons of 34 pixels in the queue where a finger wants 44. Under 520 pixels wide or 360 tall the margins and headings shrink, and the buttons, selects, ticks, station summaries, the queue's links and the footer links all get 44 pixel targets. A bigger screen sees the same page it always did. The sections still stack, so it scrolls, vertically, which is the one direction a small screen is good at. `PolisWeb.CompactCssTest`.
 
+- [Feature] **"Show advanced features", off by default.** The station page is now the small page most halls need: the tournaments, the join field, the printer and the queue. Copies of the pairings, what this station prints (name, room, categories, boards), the update settings and starting with Windows wait behind one tick in "This program". Nothing is removed, and the help describes all of it. A station that already uses any of these (updates off, start with Windows on, more than one copy, a share of the round set) switches the tick on by itself, once, so nobody wakes up to a missing knob; after that the tick is yours.
 - [Change] **README: the hall user reads first, the developer commands moved.** "Using it" no longer opens with `mix` commands; those sit under "For developers", ahead of the sections on how Polis is built.
 
 ## [0.4.3] - 2026-10-21

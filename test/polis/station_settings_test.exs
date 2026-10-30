@@ -18,6 +18,7 @@ defmodule Polis.StationSettingsTest do
   setup do
     server = FakeServer.start()
     FakeServer.set(server, :settings, FakeServer.settings())
+    State.put_setting("advanced", true)
     Station.choose_printer("Hall printer")
     {:ok, id} = Station.join(FakeServer.link(server))
     eventually(fn -> Link.info(id).up? end)

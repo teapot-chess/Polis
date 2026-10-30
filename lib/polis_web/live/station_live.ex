@@ -23,7 +23,7 @@ defmodule PolisWeb.StationLive do
 
   use PolisWeb, :live_view
 
-  alias Polis.{Autostart, BoardRanges, Printer, Queue, State, Station, Updates}
+  alias Polis.{Advanced, Autostart, BoardRanges, Printer, Queue, State, Station, Updates}
 
   @impl true
   def mount(_params, _session, socket) do
@@ -218,6 +218,11 @@ defmodule PolisWeb.StationLive do
      |> start_async(:check, fn -> Updates.Checker.check_now() end)}
   end
 
+  def handle_event("advanced", params, socket) do
+    Advanced.put(params["on"] == "true")
+    {:noreply, load(socket)}
+  end
+
   def handle_event("autostart", params, socket) do
     case Autostart.set(params["on"] == "true") do
       :ok ->
@@ -359,6 +364,7 @@ defmodule PolisWeb.StationLive do
       jobs: safe(&Queue.jobs/0, []),
       printer: safe(&Station.printer/0, nil),
       paper: safe(&Station.paper/0, :a4),
+      advanced?: safe(&Advanced.enabled?/0, false),
       dry_run?: Printer.dry_run?(),
       notice: Updates.notice(),
       install_kind: Updates.install_kind(),
@@ -506,7 +512,7 @@ defmodule PolisWeb.StationLive do
             </p>
 
             <.station_form
-              :if={t["station"]}
+              :if={@advanced? && t["station"]}
               t={t}
               params={station_params(t, @drafts)}
               draft?={Map.has_key?(@drafts, t["id"])}
@@ -537,7 +543,7 @@ defmodule PolisWeb.StationLive do
                 /> {gettext("Print the place cards")}
               </label>
 
-              <form id={"copies-form-#{t["id"]}"} phx-change="copies">
+              <form :if={@advanced?} id={"copies-form-#{t["id"]}"} phx-change="copies">
                 <input type="hidden" name="tournament" value={t["id"]} />
                 <label>
                   {gettext("Copies of the pairings")}
@@ -681,6 +687,24 @@ defmodule PolisWeb.StationLive do
         <p>
           <label>
             <input
+              id="advanced"
+              type="checkbox"
+              checked={@advanced?}
+              phx-click="advanced"
+              phx-value-on={to_string(!@advanced?)}
+            /> {gettext("Show advanced features")}
+          </label>
+        </p>
+
+        <p :if={!@advanced?} id="advanced-note" class="note">
+          {gettext(
+            "Hidden until then: copies of the pairings, what this station prints, update settings and starting with Windows."
+          )}
+        </p>
+
+        <p :if={@advanced?}>
+          <label>
+            <input
               id="update-check"
               type="checkbox"
               checked={@update_mode == "ask"}
@@ -690,7 +714,7 @@ defmodule PolisWeb.StationLive do
           </label>
         </p>
 
-        <p :if={Autostart.supported?()}>
+        <p :if={@advanced? && Autostart.supported?()}>
           <label>
             <input
               id="autostart"
@@ -703,7 +727,13 @@ defmodule PolisWeb.StationLive do
         </p>
 
         <p>
-          <button id="check-now" type="button" phx-click="check_now" disabled={@checking?}>
+          <button
+            :if={@advanced?}
+            id="check-now"
+            type="button"
+            phx-click="check_now"
+            disabled={@checking?}
+          >
             {if @checking?, do: gettext("Looking..."), else: gettext("Look now")}
           </button>
 

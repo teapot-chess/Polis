@@ -34,6 +34,7 @@ defmodule PolisWeb.StationLiveTest do
   end
 
   test "joining from the form", %{conn: conn} do
+    State.put_setting("advanced", true)
     server = FakeServer.start()
     {:ok, view, _html} = live(conn, "/")
 
@@ -130,5 +131,86 @@ defmodule PolisWeb.StationLiveTest do
 
     {:ok, view, _html} = live(recycle(conn), "/")
     assert render(view) =~ "Aansluiten bij een toernooi"
+  end
+
+  describe "show advanced features" do
+    test "off for a fresh station: the rarely used parts are not on the page", %{conn: conn} do
+      server = FakeServer.start()
+      {:ok, id} = Station.join(FakeServer.link(server))
+      {:ok, view, _html} = live(conn, "/")
+
+      assert has_element?(view, "#advanced")
+      refute has_element?(view, "#advanced[checked]")
+      assert has_element?(view, "#advanced-note")
+      assert has_element?(view, "#switch-pairings-#{id}")
+      refute has_element?(view, "#copies-#{id}")
+      refute has_element?(view, "#update-check")
+      refute has_element?(view, "#check-now")
+    end
+
+    test "the toggle shows and hides them, and the choice is kept", %{conn: conn} do
+      server = FakeServer.start()
+      {:ok, id} = Station.join(FakeServer.link(server))
+      {:ok, view, _html} = live(conn, "/")
+
+      view |> element("#advanced") |> render_click()
+      assert has_element?(view, "#advanced[checked]")
+      assert has_element?(view, "#copies-#{id}")
+      assert has_element?(view, "#update-check")
+      assert has_element?(view, "#check-now")
+      refute has_element?(view, "#advanced-note")
+      assert State.setting("advanced") == true
+
+      view |> element("#advanced") |> render_click()
+      refute has_element?(view, "#copies-#{id}")
+      assert State.setting("advanced") == false
+    end
+
+    test "an explicit off is not overruled by what is set", %{conn: conn} do
+      server = FakeServer.start()
+      {:ok, id} = Station.join(FakeServer.link(server))
+      Station.set_copies(id, 3)
+      State.put_setting("advanced", false)
+      {:ok, view, _html} = live(conn, "/")
+      refute has_element?(view, "#copies-#{id}")
+    end
+
+    test "an older station with copies set turns advanced on once", %{conn: conn} do
+      server = FakeServer.start()
+      {:ok, id} = Station.join(FakeServer.link(server))
+      Station.set_copies(id, 3)
+      assert State.setting("advanced") == nil
+
+      {:ok, view, _html} = live(conn, "/")
+      assert has_element?(view, "#advanced[checked]")
+      assert has_element?(view, "#copies-#{id}")
+      assert State.setting("advanced") == true
+    end
+
+    test "an older station with updates switched off turns advanced on", %{conn: conn} do
+      Polis.Updates.put_mode("never")
+      {:ok, view, _html} = live(conn, "/")
+      assert has_element?(view, "#advanced[checked]")
+      assert has_element?(view, "#update-check")
+    end
+
+    test "an older station with nothing set stays off and stores nothing", %{conn: conn} do
+      server = FakeServer.start()
+      {:ok, _id} = Station.join(FakeServer.link(server))
+      {:ok, view, _html} = live(conn, "/")
+      refute has_element?(view, "#advanced[checked]")
+      assert State.setting("advanced") == nil
+    end
+  end
+
+  test "a share of the round set on a tournament counts as advanced in use" do
+    server = FakeServer.start()
+    {:ok, id} = Station.join(FakeServer.link(server))
+    refute Polis.Advanced.in_use?()
+
+    State.update_tournament(id, &Map.put(&1, "station", %{"boards" => "1-20"}))
+    assert Polis.Advanced.in_use?()
+    assert Polis.Advanced.enabled?()
+    assert State.setting("advanced") == true
   end
 end
