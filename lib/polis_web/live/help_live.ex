@@ -70,7 +70,7 @@ defmodule PolisWeb.HelpLive do
           <h2>Wat vanzelf afgedrukt wordt, en wat niet</h2>
           <ul class="prose">
             <li>
-              Een nieuwe ronde: de paringslijst (zoveel exemplaren als je kiest, één tot vijf) en de tafelkaartjes, elk met zijn eigen schakelaar. Eén keer per ronde.
+              Een nieuwe ronde: de paringslijst (zoveel exemplaren als je kiest, één tot vijf; dat kiezen is geavanceerd) en de tafelkaartjes, elk met zijn eigen schakelaar. Eén keer per ronde.
             </li>
             <li>
               Een ronde die de arbiter na het afdrukken nog wijzigt: niets vanzelf. Er komt "gewijzigd sinds het afgedrukt is" bij het toernooi te staan, met een knop "Opnieuw afdrukken". Een blad aan de muur dat vanzelf verandert, is erger dan een blad dat oud is.
@@ -85,7 +85,7 @@ defmodule PolisWeb.HelpLive do
         </section>
 
         <section id="help-share">
-          <h2>Wat dit station afdrukt</h2>
+          <h2>Wat dit station afdrukt (geavanceerd)</h2>
           <p>
             Een zaal met twee printers wil niet twee keer dezelfde lijst. Onder "Dit station" bij een toernooi geef je het station een naam en kies je een ruimte van het toernooi, en kies je wat het afdrukt: categorieën (vinkjes) en bordnummers, zoals <span class="mono">1-20, 35, 40-45</span>. Onder het veld staat meteen hoe Polis de nummers leest.
           </p>
@@ -125,6 +125,16 @@ defmodule PolisWeb.HelpLive do
           </p>
           <p>
             De installatie voor Windows en die voor Linux (met install.sh) werken zichzelf bij. Een draagbare kopie en de Mac-app vervang je met de hand.
+          </p>
+        </section>
+
+        <section id="help-advanced">
+          <h2>Geavanceerde functies</h2>
+          <p>
+            Onder "Dit programma" staat het vakje "Geavanceerde functies tonen". Uit (zo begint elk station) is de pagina klein: toernooien, aansluiten, printer en wachtrij. Aan komt erbij: het aantal exemplaren van de paringslijst, "Dit station" per toernooi, de instellingen voor updates en starten met Windows. Die delen zijn hieronder met "(geavanceerd)" aangeduid.
+          </p>
+          <p>
+            Een station dat deze dingen al gebruikte (updates uit, starten met Windows aan, meer dan één exemplaar, of een deel van de ronde ingesteld) zet het vakje de eerste keer zelf aan, zodat niemand iets kwijtraakt. Daarna beslis jij.
           </p>
         </section>
 
@@ -203,7 +213,7 @@ defmodule PolisWeb.HelpLive do
           <h2>What prints by itself, and what does not</h2>
           <ul class="prose">
             <li>
-              A new round: the pairings list (as many copies as you choose, one to five) and the place cards, each with its own switch. Once per round.
+              A new round: the pairings list (as many copies as you choose, one to five; choosing is advanced) and the place cards, each with its own switch. Once per round.
             </li>
             <li>
               A round the arbiter changes after it was printed: nothing by itself. The tournament shows "changed since it was printed", with a Reprint button. A sheet on the wall that changes by itself is worse than one that is old.
@@ -218,7 +228,7 @@ defmodule PolisWeb.HelpLive do
         </section>
 
         <section id="help-share">
-          <h2>What this station prints</h2>
+          <h2>What this station prints (advanced)</h2>
           <p>
             A hall with two printers does not want the same list twice. Under "This station" by a tournament you give the station a name and pick one of the tournament's rooms, and choose what it prints: categories (tick boxes) and board numbers, like <span class="mono">1-20, 35, 40-45</span>. Below the field, Polis says at once how it reads the numbers.
           </p>
@@ -258,6 +268,16 @@ defmodule PolisWeb.HelpLive do
           </p>
           <p>
             The Windows installation and the Linux one (with install.sh) update themselves. A portable copy and the Mac app are replaced by hand.
+          </p>
+        </section>
+
+        <section id="help-advanced">
+          <h2>Advanced features</h2>
+          <p>
+            Under "This program" is the tick "Show advanced features". Off (how every station starts) the page is small: tournaments, joining, the printer and the queue. On adds the number of copies of the pairings, "This station" per tournament, and the settings for updates and starting with Windows. Those parts are marked "(advanced)" below.
+          </p>
+          <p>
+            A station that already used these things (updates off, start with Windows on, more than one copy, or a share of the round set) ticks it by itself the first time, so nobody loses anything. After that it is yours to decide.
           </p>
         </section>
 
