@@ -15,6 +15,9 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-30
+
+- [Security] **phoenix_html 4.4.0.** 4.3.0 picked up an advisory overnight (EEF-CVE-2026-117645, medium), and the dependency audit stopped the build, as it should.
 - [Security] **Bandit 1.14.1.** Three fresh advisories against 1.13.1 (HTTP/2 header blocks that unfold into unbounded allocations, quadratic work on blocked streams, WebSocket frames after a close) turned the dependency audit red. Updated, with `plug_crypto` 2.2.1 riding along; the audit is green. Polis never spoke HTTP/2 to anybody, but the audit does not grade on intent.
 
 - [Change] **The page fits a 3.5 inch screen.** A Polis box with a 480x320 panel (or 320x480 upright) got a desktop page: wide margins, a footer of links 22 pixels tall, checkboxes smaller than the stylus, and buttons of 34 pixels in the queue where a finger wants 44. Under 520 pixels wide or 360 tall the margins and headings shrink, and the buttons, selects, ticks, station summaries, the queue's links and the footer links all get 44 pixel targets. A bigger screen sees the same page it always did. The sections still stack, so it scrolls, vertically, which is the one direction a small screen is good at. `PolisWeb.CompactCssTest`.
