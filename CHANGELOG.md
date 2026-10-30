@@ -15,6 +15,8 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+- [Change] **The page fits a 3.5 inch screen.** A Polis box with a 480x320 panel (or 320x480 upright) got a desktop page: wide margins, a footer of links 22 pixels tall, checkboxes smaller than the stylus, and buttons of 34 pixels in the queue where a finger wants 44. Under 520 pixels wide or 360 tall the margins and headings shrink, and the buttons, selects, ticks, station summaries, the queue's links and the footer links all get 44 pixel targets. A bigger screen sees the same page it always did. The sections still stack, so it scrolls, vertically, which is the one direction a small screen is good at. `PolisWeb.CompactCssTest`.
+
 - [Change] **README: the hall user reads first, the developer commands moved.** "Using it" no longer opens with `mix` commands; those sit under "For developers", ahead of the sections on how Polis is built.
 
 ## [0.4.3] - 2026-10-21

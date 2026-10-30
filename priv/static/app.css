@@ -70,3 +70,26 @@ ul.prose { list-style: disc; padding-left: 1.3rem; margin: 0 0 .6rem; }
   .job { grid-template-columns: 1fr; }
   .job .status, .job .actions { grid-column: 1; grid-row: auto; }
 }
+
+/* ==== compact-screen: 3.5 inch panels (480x320 landscape, 320x480 portrait). Only inside this media query;
+   the big-screen layout above is untouched. ==== */
+@media (max-width: 520px), (max-height: 360px) {
+  body { font-size: 15px; line-height: 1.4; }
+  main { padding: .5rem .5rem 1.5rem; }
+  h1 { font-size: 1.25rem; }
+  h1 .name { font-size: .95rem; }
+  h2 { font-size: 1rem; margin-bottom: .4rem; }
+  section { padding: .6rem .7rem; margin-top: .5rem; }
+  input[type=text] { flex-basis: 10rem; }
+  select { min-height: 44px; }
+  button, button.danger, .warn button, .job .actions button { min-height: 44px; }
+  label { min-height: 44px; }
+  input[type=checkbox] { width: 1.6rem; height: 1.6rem; flex: none; }
+  .switches { gap: 0 1rem; }
+  details.station summary { display: flex; align-items: center; min-height: 44px; }
+  details.station .ticks label { min-height: 44px; }
+  .job .actions a { display: inline-flex; align-items: center; min-height: 44px; }
+  .foot { margin-top: .8rem; gap: .2rem; }
+  .foot a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 .6rem; }
+}
+/* ==== end compact-screen ==== */
