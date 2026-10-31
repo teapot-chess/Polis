@@ -157,19 +157,22 @@ defmodule Polis.Layout do
 
   defp boards(payload), do: List.wrap(payload["boards"])
 
-  defp heading(payload, w, h) do
+  defp heading(payload, w, h), do: heading(payload, w, h, pairings_line(payload))
+
+  defp pairings_line(payload) do
+    case payload["rounds"] do
+      n when is_integer(n) and n > 0 ->
+        gettext("Pairings - round %{n} of %{total}", n: payload["round"], total: n)
+
+      _unknown ->
+        gettext("Pairings - round %{n}", n: payload["round"])
+    end
+  end
+
+  defp heading(payload, w, h, round_line) do
     t = payload["tournament"] || %{}
     width = w - 2 * @margin
     name = to_string(t["name"] || "")
-
-    round_line =
-      case payload["rounds"] do
-        n when is_integer(n) and n > 0 ->
-          gettext("Pairings - round %{n} of %{total}", n: payload["round"], total: n)
-
-        _unknown ->
-          gettext("Pairings - round %{n}", n: payload["round"])
-      end
 
     info =
       ([t["city"], date(payload) || t["dates"]] ++ selection(payload))
@@ -309,13 +312,22 @@ defmodule Polis.Layout do
     {:text, x, y, :bold, size, text, []}
   end
 
-  defp empty_note([], [], w, top),
+  defp empty_note(chunk, rows, w, top, words \\ nil)
+
+  defp empty_note([], [], w, top, words),
     do: [
-      {:text, w / 2, top - 40, :regular, 11, gettext("No boards in this round."),
+      {:text, w / 2, top - 40, :regular, 11, words || gettext("No boards in this round."),
        [align: :center]}
     ]
 
-  defp empty_note(_chunk, _rows, _w, _top), do: []
+  defp empty_note(_chunk, _rows, _w, _top, _words), do: []
+
+  defp chunk_rows(rows, per_page) do
+    case Enum.chunk_every(rows, per_page) do
+      [] -> [[]]
+      chunks -> chunks
+    end
+  end
 
   defp footer(n, total, w) do
     [
@@ -422,6 +434,355 @@ defmodule Polis.Layout do
 
   defp upside_down({:rect, x, y, rw, rh, opts}, w, h),
     do: {:rect, w - x - rw, h - y - rh, rw, rh, opts}
+
+  # --- the standings ---------------------------------------------------------------
+
+  @max_tiebreaks 4
+  @tiebreak_width 40
+
+  @doc "The standings frame (`server-standings`) as a document."
+  def standings(frame, paper \\ :a4) do
+    with_locale(frame, fn -> standings_doc(frame, paper(paper, :atom)) end)
+  end
+
+  defp standings_doc(frame, paper) do
+    {w, h} = Map.fetch!(@papers, paper)
+    rows = List.wrap(frame["rows"])
+    tiebreaks = frame["tiebreaks"] |> List.wrap() |> Enum.take(@max_tiebreaks)
+    cols = standings_columns(w, length(tiebreaks))
+
+    table_top = h - @margin - 74
+    per_page = max(1, trunc((table_top - 18 - @margin - 24) / @row))
+    chunks = chunk_rows(rows, per_page)
+    total = length(chunks)
+
+    pages =
+      chunks
+      |> Enum.with_index(1)
+      |> Enum.map(fn {chunk, n} ->
+        heading(frame, w, h, standings_line(frame)) ++
+          standings_titles(frame, tiebreaks, cols, table_top) ++
+          standings_body(chunk, tiebreaks, cols, table_top - 18) ++
+          empty_note(chunk, rows, w, table_top, gettext("No standings yet.")) ++
+          footer(n, total, w)
+      end)
+
+    %{
+      paper: paper,
+      width: w,
+      height: h,
+      title: title(frame, gettext("Standings")),
+      pages: pages
+    }
+  end
+
+  defp standings_line(%{"round" => n}) when is_integer(n) and n > 0,
+    do: gettext("Standings after round %{n}", n: n)
+
+  defp standings_line(_frame), do: gettext("Standings")
+
+  # Rank | Name | Fed | Rtg | Pts | up to four tie-breaks, the numbers right
+  # aligned at their column's right edge.
+  defp standings_columns(w, tiebreak_count) do
+    left = @margin
+    right = w - @margin
+    points = right - tiebreak_count * @tiebreak_width - 4
+    rating = points - 44
+    fed = rating - 64
+    name = left + 36
+
+    %{
+      left: left,
+      right: right,
+      rank: left + 24,
+      name: name,
+      name_width: fed - name - 8,
+      fed: fed,
+      rating: rating,
+      points: points,
+      tiebreak: fn i -> right - (tiebreak_count - 1 - i) * @tiebreak_width end
+    }
+  end
+
+  defp standings_titles(frame, tiebreaks, c, top) do
+    y = top - 10
+    size = 8.5
+    rating = to_string(frame["rating_label"] || "Rtg")
+
+    [
+      {:text, c.rank, y, :bold, size, "#", [align: :right]},
+      {:text, c.name, y, :bold, size, gettext("Name"), []},
+      {:text, c.fed, y, :bold, size, gettext("Fed"), []},
+      {:text, c.rating, y, :bold, size, fit(rating, :bold, size, 32), [align: :right]},
+      {:text, c.points, y, :bold, size, gettext("Pts"), [align: :right]}
+    ] ++
+      (tiebreaks
+       |> Enum.with_index()
+       |> Enum.map(fn {tb, i} ->
+         {:text, c.tiebreak.(i), y, :bold, size,
+          fit(to_string(tb), :bold, size, @tiebreak_width - 2), [align: :right]}
+       end)) ++
+      [{:line, c.left, top - 15, c.right, top - 15, [width: 0.5]}]
+  end
+
+  defp standings_body(rows, tiebreaks, c, top) do
+    rows
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {row, i} ->
+      base = top - @row * i - 11
+      line_y = top - @row * (i + 1) + 1
+      values = List.wrap(row["tiebreaks"])
+
+      [
+        {:text, c.rank, base, :regular, @body_size,
+         fit(to_string(row["rank"] || ""), :regular, @body_size, 28), [align: :right]},
+        name_op(c.name, base, to_string(row["name"] || ""), c.name_width),
+        {:text, c.fed, base, :regular, @body_size, to_string(row["federation"] || ""), []},
+        {:text, c.rating, base, :regular, @body_size, rating(row), [align: :right]},
+        {:text, c.points, base, :bold, @body_size, to_string(row["score"] || ""), [align: :right]}
+      ] ++
+        (tiebreaks
+         |> Enum.with_index()
+         |> Enum.map(fn {_tb, j} ->
+           {:text, c.tiebreak.(j), base, :regular, @body_size,
+            fit(to_string(Enum.at(values, j) || ""), :regular, @body_size, @tiebreak_width - 2),
+            [align: :right]}
+         end)) ++
+        [{:line, c.left, line_y, c.right, line_y, [width: 0.25, gray: 0.6]}]
+    end)
+  end
+
+  # --- the player list ---------------------------------------------------------------
+
+  @doc """
+  The players of a round payload in alphabetical order, each with the
+  board (a bye says so), the colour and, when the tournament has rooms, the
+  room: the sheet on the door that answers "where am I sitting".
+  """
+  def player_list(payload, paper \\ :a4) do
+    with_locale(payload, fn -> player_list_doc(payload, paper(paper, :atom)) end)
+  end
+
+  defp player_list_doc(payload, paper) do
+    {w, h} = Map.fetch!(@papers, paper)
+    rows = payload |> boards() |> Enum.flat_map(&seat_rows/1) |> Enum.sort_by(&sort_key/1)
+    rooms? = Enum.any?(rows, &(&1.room != ""))
+    cols = list_columns(w, rooms?)
+
+    table_top = h - @margin - 74
+    per_page = max(1, trunc((table_top - 18 - @margin - 24) / @row))
+    chunks = chunk_rows(rows, per_page)
+    total = length(chunks)
+
+    pages =
+      chunks
+      |> Enum.with_index(1)
+      |> Enum.map(fn {chunk, n} ->
+        heading(payload, w, h, list_line(payload)) ++
+          list_titles(cols, rooms?, table_top) ++
+          list_body(chunk, cols, rooms?, table_top - 18) ++
+          empty_note(chunk, rows, w, table_top, gettext("No players in this round.")) ++
+          footer(n, total, w)
+      end)
+
+    %{
+      paper: paper,
+      width: w,
+      height: h,
+      title: title(payload, gettext("Player list")),
+      pages: pages
+    }
+  end
+
+  defp list_line(payload) do
+    case payload["rounds"] do
+      n when is_integer(n) and n > 0 ->
+        gettext("Players - round %{n} of %{total}", n: payload["round"], total: n)
+
+      _unknown ->
+        gettext("Players - round %{n}", n: payload["round"])
+    end
+  end
+
+  # One row a seat: both players of a game, and the player of a bye.
+  defp seat_rows(board) do
+    label = to_string(board["board"] || "")
+    room = to_string(board["room"] || "")
+    white = board["white"]
+    black = board["black"]
+    bye? = is_nil(black) or not is_nil(board["bye"])
+
+    seats =
+      cond do
+        is_map(white) and bye? -> [{white, gettext("bye"), "", ""}]
+        is_map(white) and is_map(black) -> [{white, label, "W", room}, {black, label, "B", room}]
+        true -> []
+      end
+
+    for {player, where, colour, room} <- seats do
+      %{name: player_name(player), board: where, colour: colour, room: room}
+    end
+  end
+
+  # Alphabetical the way a person reads it: accents and case do not count.
+  defp sort_key(%{name: name}) do
+    name
+    |> String.normalize(:nfd)
+    |> String.replace(~r/\p{Mn}/u, "")
+    |> String.downcase()
+  end
+
+  defp list_columns(w, rooms?) do
+    left = @margin
+    right = w - @margin
+    colour = if rooms?, do: right - 130, else: right
+    board = colour - 70
+
+    %{
+      left: left,
+      right: right,
+      name: left,
+      name_width: board - 60 - left,
+      board: board,
+      colour: colour,
+      room: right
+    }
+  end
+
+  defp list_titles(c, rooms?, top) do
+    y = top - 10
+    size = 8.5
+
+    [
+      {:text, c.name, y, :bold, size, gettext("Player"), []},
+      {:text, c.board, y, :bold, size, gettext("Board"), [align: :right]},
+      {:text, c.colour, y, :bold, size, gettext("Colour"), [align: :right]}
+    ] ++
+      if(rooms?,
+        do: [{:text, c.room, y, :bold, size, gettext("Room"), [align: :right]}],
+        else: []
+      ) ++
+      [{:line, c.left, top - 15, c.right, top - 15, [width: 0.5]}]
+  end
+
+  defp list_body(rows, c, rooms?, top) do
+    rows
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {row, i} ->
+      base = top - @row * i - 11
+      line_y = top - @row * (i + 1) + 1
+
+      [
+        name_op(c.name, base, row.name, c.name_width),
+        {:text, c.board, base, :bold, @body_size, row.board, [align: :right]},
+        {:text, c.colour, base, :regular, @body_size, colour_word(row.colour), [align: :right]}
+      ] ++
+        if(rooms?,
+          do: [
+            {:text, c.room, base, :regular, @body_size, fit(row.room, :regular, @body_size, 100),
+             [align: :right]}
+          ],
+          else: []
+        ) ++
+        [{:line, c.left, line_y, c.right, line_y, [width: 0.25, gray: 0.6]}]
+    end)
+  end
+
+  defp colour_word("W"), do: gettext("White")
+  defp colour_word("B"), do: gettext("Black")
+  defp colour_word(_bye), do: ""
+
+  # --- the result slips ---------------------------------------------------------------
+
+  @slips_per_page 4
+
+  @doc """
+  One result slip a board with two players, four to a sheet, to be cut
+  apart: the tournament and round, the board, both names, the three
+  results to tick and room for both signatures. A bye has nothing to
+  report.
+  """
+  def result_slips(payload, paper \\ :a4) do
+    with_locale(payload, fn -> slips_doc(payload, paper(paper, :atom)) end)
+  end
+
+  defp slips_doc(payload, paper) do
+    {w, h} = Map.fetch!(@papers, paper)
+    games = for b <- boards(payload), is_map(b["white"]), is_map(b["black"]), do: b
+    slip_h = (h - 2 * @margin) / @slips_per_page
+
+    pages =
+      case games do
+        [] ->
+          [
+            [
+              {:text, w / 2, h / 2, :regular, 11, gettext("No boards in this round."),
+               [align: :center]}
+            ]
+          ]
+
+        games ->
+          games
+          |> Enum.chunk_every(@slips_per_page)
+          |> Enum.map(fn chunk ->
+            chunk
+            |> Enum.with_index()
+            |> Enum.flat_map(fn {board, i} ->
+              slip(payload, board, w, h - @margin - i * slip_h, slip_h)
+            end)
+          end)
+      end
+
+    %{
+      paper: paper,
+      width: w,
+      height: h,
+      title: title(payload, gettext("Result slips")),
+      pages: pages
+    }
+  end
+
+  defp slip(payload, board, w, top, slip_h) do
+    left = @margin + 8
+    right = w - @margin - 8
+    width = right - left
+    t = payload["tournament"] || %{}
+    room = to_string(board["room"] || "")
+    sign_y = top - slip_h + 44
+
+    head = gettext("%{tournament} - round %{n}", tournament: t["name"] || "", n: payload["round"])
+    head = if room == "", do: head, else: head <> "  ·  " <> room
+
+    [
+      {:text, left, top - 22, :regular, 9, fit(head, :regular, 9, width - 110), [gray: 0.35]},
+      {:text, right, top - 24, :bold, 20, gettext("Board %{n}", n: board["board"]),
+       [align: :right]},
+      {:text, left, top - 52, :regular, 9, gettext("White"), [gray: 0.35]},
+      name_op(left + 44, top - 52, player_name(board["white"]), width - 44),
+      {:text, left, top - 74, :regular, 9, gettext("Black"), [gray: 0.35]},
+      name_op(left + 44, top - 74, player_name(board["black"]), width - 44)
+    ] ++
+      result_boxes(left, top - 118) ++
+      [
+        {:line, left, sign_y, left + width / 2 - 12, sign_y, [width: 0.5]},
+        {:text, left, sign_y - 10, :regular, 7.5, gettext("White signs"), [gray: 0.35]},
+        {:line, left + width / 2 + 12, sign_y, right, sign_y, [width: 0.5]},
+        {:text, left + width / 2 + 12, sign_y - 10, :regular, 7.5, gettext("Black signs"),
+         [gray: 0.35]},
+        {:line, 0, top - slip_h, w, top - slip_h, [width: 0.5, dash: [4, 3], gray: 0.5]}
+      ]
+  end
+
+  # Three boxes to tick, each with its result beside it.
+  defp result_boxes(left, y) do
+    Enum.flat_map([{left, "1 - 0"}, {left + 150, "1/2 - 1/2"}, {left + 320, "0 - 1"}], fn {x,
+                                                                                           label} ->
+      [
+        {:rect, x, y, 20, 20, [width: 1.25]},
+        {:text, x + 30, y + 5, :bold, 13, label, []}
+      ]
+    end)
+  end
 
   # --- fitting --------------------------------------------------------------------
 

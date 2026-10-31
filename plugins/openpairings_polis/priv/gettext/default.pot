@@ -343,3 +343,18 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "Typed on the station before this tournament had rooms. It is a label only: the station prints the whole hall until you pick a room."
 msgstr ""
+
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Standings"
+msgstr ""
+
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Player list"
+msgstr ""
+
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Result slips"
+msgstr ""

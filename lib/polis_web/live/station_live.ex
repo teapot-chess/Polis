@@ -82,7 +82,7 @@ defmodule PolisWeb.StationLive do
   # --- per tournament -------------------------------------------------------------------
 
   def handle_event("switch", %{"id" => id, "which" => which} = params, socket)
-      when which in ["print_pairings", "print_placecards"] do
+      when which in ["print_pairings", "print_placecards", "print_playerlist", "print_slips"] do
     if State.tournament(id), do: Station.set_switch(id, which, params["on"] == "true")
     {:noreply, load(socket)}
   end
@@ -142,6 +142,14 @@ defmodule PolisWeb.StationLive do
 
   def handle_event("reprint_round", %{"id" => id}, socket) do
     if State.tournament(id), do: Station.reprint_round(id)
+    {:noreply, load(socket)}
+  end
+
+  # The sheets that are not printed by themselves, on request: the player
+  # list, the result slips and the last standings the server sent.
+  def handle_event("print_now", %{"id" => id, "what" => what}, socket)
+      when what in ["playerlist", "slips", "standings"] do
+    if State.tournament(id), do: Station.print_now(id, what)
     {:noreply, load(socket)}
   end
 
@@ -396,6 +404,19 @@ defmodule PolisWeb.StationLive do
 
   defp held_round(t), do: get_in(t, ["payload", "round"])
 
+  # What can be printed on request: the standings only when the server has
+  # sent some, since a station has no standings of its own.
+  defp print_now_buttons(t) do
+    [
+      {"playerlist", gettext("Print the player list now")},
+      {"slips", gettext("Print the result slips now")}
+    ] ++
+      if(t["standings"],
+        do: [{"standings", gettext("Print the standings now")}],
+        else: []
+      )
+  end
+
   defp time(nil), do: ""
   defp time(%DateTime{} = dt), do: Calendar.strftime(dt, "%H:%M")
 
@@ -523,6 +544,19 @@ defmodule PolisWeb.StationLive do
               </button>
             </p>
 
+            <p :if={held_round(t)} class="print-now" id={"print-now-#{t["id"]}"}>
+              <button
+                :for={{what, label} <- print_now_buttons(t)}
+                id={"print-now-#{what}-#{t["id"]}"}
+                type="button"
+                phx-click="print_now"
+                phx-value-id={t["id"]}
+                phx-value-what={what}
+              >
+                {label}
+              </button>
+            </p>
+
             <.station_form
               :if={@advanced? && t["station"]}
               t={t}
@@ -553,6 +587,30 @@ defmodule PolisWeb.StationLive do
                   phx-value-which="print_placecards"
                   phx-value-on={to_string(t["print_placecards"] == false)}
                 /> {gettext("Print the place cards")}
+              </label>
+
+              <label>
+                <input
+                  id={"switch-playerlist-#{t["id"]}"}
+                  type="checkbox"
+                  checked={t["print_playerlist"] == true}
+                  phx-click="switch"
+                  phx-value-id={t["id"]}
+                  phx-value-which="print_playerlist"
+                  phx-value-on={to_string(t["print_playerlist"] != true)}
+                /> {gettext("Print the player list")}
+              </label>
+
+              <label>
+                <input
+                  id={"switch-slips-#{t["id"]}"}
+                  type="checkbox"
+                  checked={t["print_slips"] == true}
+                  phx-click="switch"
+                  phx-value-id={t["id"]}
+                  phx-value-which="print_slips"
+                  phx-value-on={to_string(t["print_slips"] != true)}
+                /> {gettext("Print the result slips")}
               </label>
 
               <form :if={@advanced?} id={"copies-form-#{t["id"]}"} phx-change="copies">

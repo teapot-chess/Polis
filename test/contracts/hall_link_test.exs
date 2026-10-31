@@ -163,6 +163,47 @@ defmodule Polis.Contracts.HallLinkTest do
       refute_receive {:printed, _}, 500
     end
 
+    test "the second job: standings are held until a print asks for them, and the new sheets print",
+         %{server: server} do
+      FakeServer.push(server, Contract.example("server-round"))
+      assert_receive {:printed, _}, 3_000
+      assert_receive {:printed, _}, 3_000
+
+      # Standings alone print nothing: they go stale with every result.
+      Contract.assert_valid!("server-standings", Contract.example("server-standings"))
+      FakeServer.push(server, Contract.example("server-standings"))
+      refute_receive {:printed, _}, 400
+
+      FakeServer.push(server, Contract.example("server-print.standings"))
+      assert_receive {:printed, %{title: "Open Brugge - Stand 3"}}, 3_000
+
+      for what <- ~w(playerlist slips) do
+        frame = Map.put(Contract.example("server-print"), "what", what)
+        Contract.assert_valid!("server-print", frame)
+        FakeServer.push(server, frame)
+        assert_receive {:printed, %{title: title}}, 3_000
+        assert title =~ if(what == "slips", do: "Uitslagstrookjes", else: "Spelerslijst")
+      end
+    end
+
+    test "a print word this station does not know prints nothing", %{server: server} do
+      FakeServer.push(server, Contract.example("server-round"))
+      assert_receive {:printed, _}, 3_000
+      assert_receive {:printed, _}, 3_000
+
+      FakeServer.push(server, %{"type" => "print", "round" => 3, "what" => "certificates"})
+      refute_receive {:printed, _}, 400
+    end
+
+    test "the frames for Nunki are ignored", %{server: server, id: id} do
+      for name <- ~w(server-announce server-announce.text server-countdown server-read) do
+        FakeServer.push(server, Contract.example(name))
+      end
+
+      refute_receive {:printed, _}, 300
+      assert Link.info(id).up?
+    end
+
     test "settings are kept as the server says", %{server: server, id: id} do
       for {_name, frame} <- Contract.examples("server-settings-polis") do
         FakeServer.push(server, frame)

@@ -26,7 +26,7 @@ defmodule OpenPairingsPolisWeb.LinkSocket do
   """
   @behaviour WebSock
 
-  alias OpenPairingsPolis.{RoundPayload, Stations}
+  alias OpenPairingsPolis.{RoundPayload, Stations, StandingsPayload}
   alias PairingsEngine.Tournaments
 
   @protocol 1
@@ -196,10 +196,17 @@ defmodule OpenPairingsPolisWeb.LinkSocket do
   end
 
   # "Print again": make sure the station has the round as it stands now,
-  # then ask for the print.
+  # then ask for the print. The standings are the one sheet not cut from the
+  # round, so they travel just before the `print` that wants them - and a
+  # table nobody should hand prizes out from is not sent, nor the print.
+  # Everything else the station already holds.
   def handle_info({:polis_print, round, what}, %{station: %{}} = state) do
     {frames, state} = round_frames(state)
-    push(frames ++ [%{type: "print", round: round, what: what}], state)
+
+    case print_frames(what, round, state) do
+      [] -> push(frames, state)
+      print -> push(frames ++ print, state)
+    end
   end
 
   def handle_info({:polis_revoked, id}, %{station: %{id: id}} = state) do
@@ -232,6 +239,17 @@ defmodule OpenPairingsPolisWeb.LinkSocket do
       _ -> {[], state}
     end
   end
+
+  defp print_frames("standings", round, state) do
+    with %{} = tournament <- Tournaments.get_tournament(state.station.tournament_id),
+         {:ok, frame} <- StandingsPayload.build(tournament) do
+      [frame, %{type: "print", round: round, what: "standings"}]
+    else
+      _none -> []
+    end
+  end
+
+  defp print_frames(what, round, _state), do: [%{type: "print", round: round, what: what}]
 
   # The station's share, from the row as it is now: the page may have
   # changed it since this socket last looked.

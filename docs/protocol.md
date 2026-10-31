@@ -13,8 +13,8 @@ stale), and both halves are tested against that copy: the station in
 `plugins/openpairings_polis/test/openpairings_polis_web/hall_link_contract_test.exs`.
 
 The messages that are Polis's own are `device-status-polis`,
-`device-settings-polis`, `server-settings-polis` and `server-print`, and
-the round payload's `selection`. Everything below is what Polis *does*
+`device-settings-polis`, `server-settings-polis`, `server-print` and
+`server-standings`, and the round payload's `selection` and `room`. Everything below is what Polis *does*
 with them, which no schema can say.
 
 ## Joining
@@ -72,3 +72,24 @@ one), it never prints an older round than the one it holds, and it does
 not keep rounds other than the latest: the queue's jobs keep their own copy
 of the payload they were made from, so a Reprint prints what was printed.
 `spoken` and `club` are not printed.
+
+## The second job
+
+Three more sheets, none printed on arrival unless the person said so.
+
+- `print` with `what` `playerlist` or `slips` prints from the round the
+  station holds: the player list is alphabetical (accents and case do not
+  count) with board, colour and, when the boards carry a `room`, the room; a
+  bye is listed as "bye". The slips are one per board with two players, four
+  to a sheet. Both can also be switched on per tournament to print with every
+  new round, like the pairings and the place cards; they are off until somebody
+  turns them on, and the tournament's page has a "print now" button for each.
+- `standings` is held, never printed on arrival: the server sends it only just
+  before a `print` with `what` `standings`, because standings go stale with
+  every result and a sheet nobody asked for is paper. The station keeps the
+  last one; the page offers "Print the standings now" once it holds one, which
+  prints that one. At most four tie-breaks are drawn.
+- A `print` whose `what` the station does not know prints nothing; the
+  protocol grows, and an old station must not print the wrong thing for a new
+  word. The frames meant for Nunki (`announce`, `countdown`, `read`, `stop`)
+  are ignored.

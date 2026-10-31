@@ -343,3 +343,17 @@ msgstr "Dit toernooi heeft nog geen ruimtes. Je maakt ze in Instellingen, Ruimte
 #, elixir-autogen, elixir-format
 msgid "Typed on the station before this tournament had rooms. It is a label only: the station prints the whole hall until you pick a room."
 msgstr "Op het station getypt voordat dit toernooi ruimtes had. Het is alleen een label: het station drukt de hele zaal af tot je een ruimte kiest."
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Standings"
+msgstr "Stand"
+
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Player list"
+msgstr "Spelerslijst"
+
+#: lib/openpairings_polis_web/live/stations_live.ex
+#, elixir-autogen, elixir-format
+msgid "Result slips"
+msgstr "Uitslagstrookjes"

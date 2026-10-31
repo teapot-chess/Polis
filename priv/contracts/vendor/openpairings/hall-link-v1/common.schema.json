@@ -76,7 +76,8 @@
         "board": {"type": "string", "minLength": 1, "description": "A label, not a number: `12`, a team board `3.1`, a shared fixed table `1001/1002`."},
         "white": {"oneOf": [{"$ref": "#/definitions/player"}, {"type": "null"}]},
         "black": {"oneOf": [{"$ref": "#/definitions/player"}, {"type": "null"}], "description": "null for a bye."},
-        "bye": {"type": ["string", "null"], "enum": ["bye", null], "description": "`bye` when there is no black player, otherwise null."}
+        "bye": {"type": ["string", "null"], "enum": ["bye", null], "description": "`bye` when there is no black player, otherwise null."},
+        "room": {"type": "string", "description": "Polis only, and only when the tournament has rooms: the name of the room the board is in, or empty for a board in none. Left out otherwise."}
       }
     },
     "round_payload": {

@@ -71,8 +71,15 @@ still remove it from the page, which keeps listing what had joined).
    pairing with the automation on, publishing by hand and a delayed publish
    running out (the last needs the core commit that broadcasts it, see
    below). A round taken back is never sent; an older round is ignored.
-5. The page's "Print round N again" (pairings, place cards or both) goes to
-   every connected station of the tournament as `print`. Remove marks the
+5. The page's "Print round N again" (pairings, place cards, both, standings,
+   player list or result slips) goes to every connected station of the
+   tournament as `print`; Manubrium's Hall card sends the same through the
+   core (`hall_command/3`), and `hall_status/2` tells it which stations are
+   online. For `standings` the plugin sends a `standings` frame (`OpenPairingsPolis.StandingsPayload`) just
+   before the `print`, and neither when the table may not be printed (a team
+   event; the last round of a FIDE-mode event with a postponed game open).
+   Each board of the round payload names its room when the tournament has
+   rooms. Remove marks the
    station revoked: a connected one is told `leave`, and the next `hello`
    from it is answered `refused revoked`.
 

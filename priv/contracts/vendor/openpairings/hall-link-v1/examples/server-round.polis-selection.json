@@ -16,6 +16,7 @@
     "boards": [
       {
         "board": "2",
+        "room": "Hall B",
         "white": {
           "name": "Dubois, Claire",
           "spoken": "Claire Dubois",

@@ -292,8 +292,15 @@ defmodule Polis.Link do
     state
   end
 
+  defp message(%{"type" => "standings"} = frame, state) do
+    Polis.Station.standings_received(state.id, frame)
+    state
+  end
+
+  # A `what` this version does not know is ignored, as the contract says:
+  # the server may ask for more than an old station can print.
   defp message(%{"type" => "print", "round" => round, "what" => what}, state)
-       when what in ["pairings", "placecards", "both"] do
+       when is_integer(round) and is_binary(what) do
     Polis.Station.print_command(state.id, round, what)
     state
   end
