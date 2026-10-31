@@ -4,9 +4,12 @@ defmodule OpenPairingsPolis.Stations do
 
   ## Joining
 
-  `create_join_code/2` makes a code (16 characters of the 32-letter base32
-  alphabet, valid `@code_minutes` minutes, one use, bound to a tournament)
-  and stores only its SHA-256. `redeem/2` spends it and registers the
+  `create_join_code/2` makes a code (32 random bytes, base64url: 43
+  characters, valid `@code_minutes` minutes, one use, bound to a
+  tournament) and stores only its SHA-256 - the one pairing code every
+  hall app uses (OpenPairings' `hall-link-v1` contract, README, "Pairing a
+  device"). Codes made before that were 16 base32 characters, read in any
+  case; `redeem/2` still takes them until they run out. `redeem/2` spends it and registers the
   station, handing back a key (32 random bytes, base64url) that is never
   stored either - only its SHA-256 is. A station that joins the same
   tournament again (same device id) gets its row back with a new key and
@@ -69,7 +72,7 @@ defmodule OpenPairingsPolis.Stations do
   caller has already authorised the tournament for `scope`.
   """
   def create_join_code(%Scope{} = scope, %Tournament{} = tournament) do
-    code = :crypto.strong_rand_bytes(10) |> Base.encode32(case: :lower, padding: false)
+    code = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
 
     expires_at =
       DateTime.utc_now()
@@ -102,18 +105,19 @@ defmodule OpenPairingsPolis.Stations do
   Spends `code` and registers the station `attrs` describes
   (`device`, `name`, `software`). `{:ok, station, key, tournament}`, or
   `{:error, :not_found}` for a code nobody made (or whose tournament is
-  gone), `{:error, :gone}` for one used or expired - which includes a
-  code made before the account's print station was switched off.
+  gone), `{:error, :used}` for one spent already, `{:error, :expired}`
+  for one run out - which includes a code made before the account's print
+  station was switched off.
   """
   def redeem(code, attrs) when is_binary(code) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
-    code_hash = code |> String.trim() |> String.downcase() |> hash()
+    code = String.trim(code)
 
     Repo.transact(fn ->
-      with {:ok, join} <- usable_code(code_hash, now),
+      with {:ok, join} <- usable_code(code, now),
            %Tournament{} = tournament <-
              Tournaments.get_tournament(join.tournament_id) || {:error, :not_found},
-           :ok <- if(feature_on?(tournament), do: :ok, else: {:error, :gone}),
+           :ok <- if(feature_on?(tournament), do: :ok, else: {:error, :expired}),
            :ok <- spend(join, now) do
         key = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
         station = register!(tournament, attrs, hash(key), now)
@@ -130,16 +134,23 @@ defmodule OpenPairingsPolis.Stations do
     end
   end
 
-  defp usable_code(code_hash, now) do
-    case Repo.get_by(JoinCode, code_hash: code_hash) do
+  # The code as given (base64url is case-sensitive), then - for a code of
+  # the old base32 kind, which was stored lowercased and might be pasted
+  # in capitals - as lowercase.
+  defp usable_code(code, now) do
+    join =
+      Repo.get_by(JoinCode, code_hash: hash(code)) ||
+        Repo.get_by(JoinCode, code_hash: hash(String.downcase(code)))
+
+    case join do
       nil ->
         {:error, :not_found}
 
       %JoinCode{used_at: %DateTime{}} ->
-        {:error, :gone}
+        {:error, :used}
 
       %JoinCode{expires_at: at} = join ->
-        if expired?(at, now), do: {:error, :gone}, else: {:ok, join}
+        if expired?(at, now), do: {:error, :expired}, else: {:ok, join}
     end
   end
 
@@ -153,7 +164,7 @@ defmodule OpenPairingsPolis.Stations do
            set: [used_at: now]
          ) do
       {1, _} -> :ok
-      _ -> {:error, :gone}
+      _ -> {:error, :used}
     end
   end
 

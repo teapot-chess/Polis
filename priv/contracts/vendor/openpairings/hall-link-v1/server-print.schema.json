@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-print.schema.json",
+  "title": "print (server to Polis)",
+  "description": "Print round N again (the arbiter pressed it in OpenPairings). Acted on only for the round the station holds; the server sends that round first.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "round",
+    "what"
+  ],
+  "properties": {
+    "type": {
+      "const": "print"
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "what": {
+      "type": "string",
+      "enum": [
+        "pairings",
+        "placecards",
+        "both"
+      ]
+    }
+  }
+}

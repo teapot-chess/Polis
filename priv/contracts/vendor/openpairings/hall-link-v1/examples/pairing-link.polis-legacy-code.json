@@ -1,0 +1,7 @@
+{
+  "app": "polis",
+  "link": "http://localhost:4000/p/polis/join/k3m9q2x7v4w8z6y5",
+  "server": "http://localhost:4000",
+  "code": "k3m9q2x7v4w8z6y5",
+  "note": "A 16-character base32 code from before the unification: still read, still redeemed until it expires."
+}

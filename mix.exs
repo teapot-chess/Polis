@@ -176,9 +176,13 @@ defmodule Polis.MixProject do
       # The join: one POST to the address in the link. Also the update check.
       {:req, "~> 0.5"},
       # The outgoing link. Mint is already here through Req; this is its
-      # WebSocket half, by the same people. See docs/protocol.md.
+      # WebSocket half, by the same people. See docs/protocol.md and the
+      # vendored hall-link contract.
       {:mint_web_socket, "~> 1.0"},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      # The vendored hall-link contract (priv/contracts/vendor), checked in
+      # the tests; never part of a release.
+      {:ex_json_schema, "~> 0.11.5", only: :test}
     ]
   end
 

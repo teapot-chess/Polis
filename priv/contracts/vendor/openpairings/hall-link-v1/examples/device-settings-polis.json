@@ -1,0 +1,10 @@
+{
+  "type": "settings",
+  "name": "Main hall printer",
+  "room": "Main hall",
+  "categories": [
+    "U14",
+    "U16"
+  ],
+  "boards": "1-20, 35"
+}

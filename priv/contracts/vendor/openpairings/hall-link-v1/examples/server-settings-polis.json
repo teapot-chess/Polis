@@ -1,0 +1,20 @@
+{
+  "type": "settings",
+  "name": "Main hall printer",
+  "room": "Main hall",
+  "categories": [
+    "U14",
+    "U16"
+  ],
+  "boards": "1-20, 35",
+  "categories_available": [
+    "U10",
+    "U12",
+    "U14",
+    "U16"
+  ],
+  "rooms_available": [
+    "Main hall",
+    "Annex"
+  ]
+}

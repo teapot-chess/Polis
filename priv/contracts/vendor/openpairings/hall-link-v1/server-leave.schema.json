@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-leave.schema.json",
+  "title": "leave (server to device)",
+  "description": "The device was removed in OpenPairings while connected: forget the tournament. The server closes the line after it.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type"
+  ],
+  "properties": {
+    "type": {
+      "const": "leave"
+    }
+  }
+}

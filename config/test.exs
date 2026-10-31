@@ -25,3 +25,7 @@ config :polis,
 config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
 config :phoenix_live_view, enable_expensive_runtime_checks: true
+
+# A contract schema's `$ref` is a GitHub address; the tests answer it from
+# the vendored copy (`Polis.Contract.resolve/1`), never from the network.
+config :ex_json_schema, :remote_schema_resolver, {Polis.Contract, :resolve}

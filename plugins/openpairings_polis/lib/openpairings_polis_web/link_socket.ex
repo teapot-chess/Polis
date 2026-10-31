@@ -2,8 +2,8 @@ defmodule OpenPairingsPolisWeb.LinkSocket do
   @moduledoc """
   The server end of a print station's link (`WebSock`), one process per
   connected station, upgraded by `OpenPairingsPolisWeb.LinkPlug`. Frames
-  are the hall-link protocol's, version 1 (`docs/protocol.md` in the Polis
-  repository).
+  are OpenPairings' `hall-link-v1` contract's (vendored in the Polis
+  repository, `priv/contracts/vendor/openpairings/hall-link-v1/`).
 
   The first frame must be `hello` with the station's key; until then
   nothing else is listened to, and a link that says nothing for ten

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-pong.schema.json",
+  "title": "pong (server to device)",
+  "description": "The answer to a text-frame `ping`.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type"
+  ],
+  "properties": {
+    "type": {
+      "const": "pong"
+    }
+  }
+}

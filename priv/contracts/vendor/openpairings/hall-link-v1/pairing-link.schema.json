@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/pairing-link.schema.json",
+  "title": "A pairing link, and what it means",
+  "description": "Not a message on any wire: one pairing link OpenPairings shows (as text with a copy button and, the same text, as a QR code), with what every hall app must read out of it. Each app's tests run its link reader over every example: its own links give `server` and `code`; another app's links are refused before anything is sent, naming the app they are for (Manubrium, which has the camera, says so and offers to pass the link on). See README.md, \"Pairing a device\".",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["app", "link", "server", "code"],
+  "properties": {
+    "app": {
+      "type": "string",
+      "enum": ["manubrium", "nunki", "polis"],
+      "description": "The app the link is for."
+    },
+    "link": {
+      "type": "string",
+      "description": "Exactly what is shown, copied and encoded in the QR code."
+    },
+    "server": {
+      "type": "string",
+      "pattern": "^https?://",
+      "description": "The server's base URL as the app derives it: scheme, host, port, and for Nunki and Polis any sub-path before `/p/<app>/join/`."
+    },
+    "code": {"$ref": "common.schema.json#/definitions/code"},
+    "note": {"type": "string", "description": "Why this example is here."}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"app": {"const": "manubrium"}}},
+      "then": {"properties": {"link": {"pattern": "^manubrium://connect\\?(.*&)?secret=[A-Za-z0-9_-]+"}}}
+    },
+    {
+      "if": {"properties": {"app": {"const": "nunki"}}},
+      "then": {"properties": {"link": {"pattern": "^https?://[^/]+(/.*)?/p/nunki/join/[A-Za-z0-9_-]+$"}}}
+    },
+    {
+      "if": {"properties": {"app": {"const": "polis"}}},
+      "then": {"properties": {"link": {"pattern": "^https?://[^/]+(/.*)?/p/polis/join/[A-Za-z0-9_-]+$"}}}
+    }
+  ]
+}

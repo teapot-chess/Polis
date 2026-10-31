@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-ping.schema.json",
+  "title": "ping (device to server)",
+  "description": "Optional: a text-frame ping, answered by `pong`. Both apps ping with WebSocket ping control frames every 25 seconds instead; the server counts either as a sign of life.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type"
+  ],
+  "properties": {
+    "type": {
+      "const": "ping"
+    }
+  }
+}

@@ -20,7 +20,7 @@ defmodule Polis.JoinTest do
     assert {:ok, attrs} = Join.redeem(FakeServer.link(server), @identity)
     assert attrs["key"] == FakeServer.get(server, :key)
     assert attrs["socket_url"] == "ws://127.0.0.1:#{server.port}/p/polis/link"
-    assert attrs["tournament_id"] == "t-1"
+    assert attrs["tournament_id"] == 1
     assert attrs["name"] == "Club Open"
     assert FakeServer.get(server, :identity) == @identity
   end
@@ -45,6 +45,12 @@ defmodule Polis.JoinTest do
              Join.redeem(FakeServer.link(server, "K7Q-4MD", "nunki"), @identity)
 
     # The code was not spent on the wrong program.
+    assert FakeServer.get(server, :identity) == nil
+  end
+
+  test "a Manubrium link is refused by name, before anything is sent", %{server: server} do
+    link = "manubrium://connect?secret=abc&server=http%3A%2F%2F127.0.0.1%3A#{server.port}"
+    assert {:error, {:wrong_product, "manubrium"}} = Join.redeem(link, @identity)
     assert FakeServer.get(server, :identity) == nil
   end
 

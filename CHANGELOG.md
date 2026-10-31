@@ -15,6 +15,14 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+- [Change] **The hall link is a contract now, not a recollection.** The protocol between Polis and OpenPairings was written down twice, once here and once in Nunki, and the two copies had started remembering different things (a join code of "at least ten characters" there, sixteen here; both wrong by now). It lives in one place, OpenPairings' `hall-link-v1` JSON Schemas, vendored byte for byte in `priv/contracts/vendor/`. `mix contracts.sync` refreshes the copy; `mix contracts.check` fails when OpenPairings has moved on, and CI runs it on every pull request and every morning, so the drift is found by a machine before it is found by a hall. `docs/protocol.md` shrank to what Polis does with the messages, which no schema can say.
+- [Change] **Every frame Polis sends is checked against the contract**, and every example the contract gives of what the server sends is pushed down a real line to see Polis cope. The stand-in server the tests talk to is held to the same schemas, since a fake that drifts from the real thing proves only that it is a fake.
+- [Change] **One pairing code for every hall app.** The OpenPairings plugin now makes the same code as Manubrium's: 32 random bytes, 43 characters, once, for fifteen minutes. Nobody types it, so nobody misses the old sixteen. Codes made before the change still join until they run out, in any case they are pasted in; a station that already joined never sees a code again and notices nothing.
+- [Change] **A link for the wrong app says which app it is for.** A Manubrium link pasted into Polis is now refused as Manubrium's, not as "not a join link", and a Nunki link as Nunki's; neither code is spent. The QR code next to the link in OpenPairings is for Manubrium on a phone, which recognises a Polis link and passes it on to the hall PC, since the hall PC has never been much of a photographer.
+- [Change] **The plugin's join refusals use the contract's words** (`unknown_code`, `used`, `expired`, `version`, `bad_request`, `too_many_attempts`), and a body that is not a station is a 400, no longer a 422. Polis only ever read the status, so no station minds.
+- [Change] **The plugin is tested in this repository's CI.** It had tests, which ran whenever somebody remembered to build OpenPairings' hosted edition with it by hand, i.e. rarely. A new CI job checks out OpenPairings' `main`, builds the hosted edition with this plugin and nothing else, and runs them, formatting included.
+- [Removed] **`plugins/openpairings_polis/_build`**, compiled test output that had been committed as if it were source. It is ignored now.
+
 ## [0.5.0] - 2026-10-30
 
 - [Security] **phoenix_html 4.4.0.** 4.3.0 picked up an advisory overnight (EEF-CVE-2026-117645, medium), and the dependency audit stopped the build, as it should.

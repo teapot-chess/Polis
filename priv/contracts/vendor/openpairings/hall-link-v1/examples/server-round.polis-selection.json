@@ -1,0 +1,49 @@
+{
+  "type": "round",
+  "round": {
+    "tournament": {
+      "id": 42,
+      "name": "Open Brugge",
+      "city": "Brugge",
+      "dates": "2026-11-07 - 2026-11-09"
+    },
+    "round": 3,
+    "rounds": 7,
+    "published_at": "2026-11-08T13:02:00Z",
+    "locale": "nl",
+    "rating_label": "Elo",
+    "team": false,
+    "boards": [
+      {
+        "board": "2",
+        "white": {
+          "name": "Dubois, Claire",
+          "spoken": "Claire Dubois",
+          "title": "",
+          "rating": 1940,
+          "federation": "FRA",
+          "club": "",
+          "number": 7,
+          "score": "1.5"
+        },
+        "black": {
+          "name": "Maes, Dirk",
+          "spoken": "Dirk Maes",
+          "title": "",
+          "rating": 0,
+          "federation": "BEL",
+          "club": "KBSK",
+          "number": 12,
+          "score": "1.5"
+        },
+        "bye": null
+      }
+    ],
+    "selection": {
+      "room": "",
+      "boards": "2-10",
+      "categories": []
+    },
+    "rev": "491876b55581d357b0521317749f667d87eed28c9b1c9c780c753aa5cd896a98"
+  }
+}

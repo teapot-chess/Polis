@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-refused.schema.json",
+  "title": "refused (server to device)",
+  "description": "The answer to a `hello` the server will not take; the line is closed after it. `revoked`: forget the tournament. `version` and `key`: say so and try again in a minute (a server restored from yesterday's backup may know the key tomorrow).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "reason"
+  ],
+  "properties": {
+    "type": {
+      "const": "refused"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "version",
+        "key",
+        "revoked"
+      ]
+    }
+  }
+}

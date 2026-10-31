@@ -59,8 +59,9 @@ given twice. How releases are cut and what each file is:
 Start Polis (the installer and the Mac app do it for you; the Linux service
 starts with the machine) and open its page at `http://localhost:4061`. In OpenPairings (on pairings.cloud): the
 tournament's *Settings* → *Print station* → *Add a print station*; paste the
-link it shows into the page. Choose the printer and the paper. That is the
-setup.
+link it shows into the page (or, from another device, scan its QR code with
+Manubrium on your phone, which passes the link on). The link works once, for
+fifteen minutes. Choose the printer and the paper. That is the setup.
 
 From then on, per tournament:
 
@@ -122,7 +123,8 @@ Polis does not print that, for three reasons:
    Polis; on a Raspberry Pi it is a Chromium of a hundred megabytes for a
    sheet of names.
 2. **The sheet must survive the trip.** The server sends data (the round
-   payload, `docs/protocol.md`), not a page. A page from the server would
+   payload of OpenPairings' `hall-link-v1` contract, `docs/protocol.md`),
+   not a page. A page from the server would
    tie every station to the server's CSS of the day, and an old station
    would print a new server's page wrongly or not at all.
 3. **Place cards are not a web page.** A tent card has its upper half

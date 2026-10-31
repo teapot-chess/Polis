@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-settings-polis.schema.json",
+  "title": "settings (server to Polis)",
+  "description": "The station's name, room and share as the server holds them, and what it may choose from: after `welcome` and whenever any of it changes, never twice the same in a row - except with `error`, which answers a request that was turned down and carries what still holds.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "name",
+    "room",
+    "categories",
+    "boards",
+    "categories_available",
+    "rooms_available"
+  ],
+  "properties": {
+    "type": {
+      "const": "settings"
+    },
+    "name": {
+      "type": "string"
+    },
+    "room": {
+      "type": "string",
+      "description": "A room of the tournament, empty for none, or free text from before the tournament had rooms (which restricts nothing)."
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "boards": {
+      "type": "string"
+    },
+    "categories_available": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rooms_available": {
+      "$ref": "common.schema.json#/definitions/room_names"
+    },
+    "error": {
+      "type": "string",
+      "enum": [
+        "boards",
+        "room"
+      ]
+    }
+  }
+}

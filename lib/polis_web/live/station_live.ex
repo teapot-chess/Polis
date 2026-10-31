@@ -292,6 +292,18 @@ defmodule PolisWeb.StationLive do
   defp join_error(:not_a_link),
     do: gettext("That is not a join link. It looks like https://server/p/polis/join/K7Q-4MD.")
 
+  defp join_error({:wrong_product, "nunki"}),
+    do:
+      gettext(
+        "That link is for Nunki, the hall announcer, not for a print station. Paste it into Nunki; for this station, add a print station in OpenPairings and use its link."
+      )
+
+  defp join_error({:wrong_product, "manubrium"}),
+    do:
+      gettext(
+        "That link is for the Manubrium phone app: scan it with Manubrium. For this station, add a print station in OpenPairings (the tournament's Settings, Print station) and use its link."
+      )
+
   defp join_error({:wrong_product, _product}),
     do:
       gettext(

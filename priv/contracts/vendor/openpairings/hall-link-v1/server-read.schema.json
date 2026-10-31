@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-read.schema.json",
+  "title": "read (server to Nunki)",
+  "description": "Read that round's pairings aloud now (the latest held; the device knows no other).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "round"
+  ],
+  "properties": {
+    "type": {
+      "const": "read"
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

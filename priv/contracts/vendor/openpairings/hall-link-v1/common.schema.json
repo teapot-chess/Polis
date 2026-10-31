@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/common.schema.json",
+  "title": "Hall link v1: shared definitions",
+  "description": "The shapes the other files of hall-link-v1 refer to (`common.schema.json#/definitions/<name>`). The server half is built by the OpenPairings plugins `openpairings_nunki` and `openpairings_polis` (in the Nunki and Polis repositories); the device half by `Nunki.Join`/`Nunki.Link` and `Polis.Join`/`Polis.Link`. Not a message of its own.",
+  "definitions": {
+    "version": {
+      "description": "The protocol version. A server that does not speak it answers 409 on join and `refused` `version` on the line.",
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "description": "An OpenPairings database id: a positive whole number.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "device": {
+      "description": "The device's own id, made once per data folder and never changed. Joining the same tournament again from the same device replaces its key.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "key": {
+      "description": "The device's secret for one tournament: 32 random bytes, base64url without padding. Kept in the device's state file and nowhere else; travels only in `hello`, never in a URL or a log.",
+      "type": "string",
+      "minLength": 43,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "code": {
+      "description": "A one-time pairing code as it appears in a pairing link. New codes are 32 random bytes, base64url without padding (43 characters); a reader must take any non-empty run of these characters, since codes made before the unification (16 base32 characters) stay valid until they expire.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "new_code": {
+      "description": "A pairing code as every server makes it now: 32 random bytes, base64url, no padding.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "tournament_ref": {
+      "description": "Which tournament the line is for. The name may change; the device updates what it shows from every `welcome`.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"$ref": "#/definitions/id"},
+        "name": {"type": "string"}
+      }
+    },
+    "room_names": {
+      "description": "The tournament's rooms by name (OpenPairings: Settings, Rooms), to choose from. May be empty. A server older than rooms leaves the key out, and the device then treats `room` as free text.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "player": {
+      "description": "One player on a board, as the printed pairing list has them.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "spoken", "title", "rating", "federation", "club", "number", "score"],
+      "properties": {
+        "name": {"type": "string", "description": "As stored: `Last, First`."},
+        "spoken": {"type": "string", "description": "As said aloud: `First Last`. Nunki reads it; Polis does not print it."},
+        "title": {"type": "string", "description": "`GM`, `WIM`, ... or empty."},
+        "rating": {"type": "integer", "minimum": 0, "description": "By the tournament's rating method; 0 is unrated and is left off the sheet."},
+        "federation": {"type": "string"},
+        "club": {"type": "string"},
+        "number": {"type": ["integer", "null"], "description": "The pairing number."},
+        "score": {"type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?$", "description": "The score coming INTO the round, as the pairing list prints it: `2`, `2.5`."}
+      }
+    },
+    "board": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["board", "white", "black", "bye"],
+      "properties": {
+        "board": {"type": "string", "minLength": 1, "description": "A label, not a number: `12`, a team board `3.1`, a shared fixed table `1001/1002`."},
+        "white": {"oneOf": [{"$ref": "#/definitions/player"}, {"type": "null"}]},
+        "black": {"oneOf": [{"$ref": "#/definitions/player"}, {"type": "null"}], "description": "null for a bye."},
+        "bye": {"type": ["string", "null"], "enum": ["bye", null], "description": "`bye` when there is no black player, otherwise null."}
+      }
+    },
+    "round_payload": {
+      "description": "The latest published round, cut to the device's share of it. The same shape for every hall app; a round that is not public is never sent, and neither is one older than the last sent.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["tournament", "round", "rounds", "published_at", "locale", "rating_label", "team", "boards", "rev"],
+      "properties": {
+        "tournament": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["id", "name", "city", "dates"],
+          "properties": {
+            "id": {"$ref": "#/definitions/id"},
+            "name": {"type": "string"},
+            "city": {"type": "string"},
+            "dates": {"type": "string", "description": "`2026-10-17`, `2026-10-17 - 2026-10-19`, or empty."}
+          }
+        },
+        "round": {"type": "integer", "minimum": 1},
+        "rounds": {"type": ["integer", "null"], "minimum": 1},
+        "published_at": {"type": ["string", "null"], "description": "ISO 8601, UTC."},
+        "locale": {"type": "string", "enum": ["en", "nl"], "description": "The tournament owner's language: what the sheets are printed and the pairings read in, unless the device says otherwise."},
+        "rating_label": {"type": "string", "description": "The rating column's heading: `Elo`, `Nat.`, `Rtg`."},
+        "team": {"type": "boolean"},
+        "boards": {"type": "array", "items": {"$ref": "#/definitions/board"}},
+        "rev": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 (hex) of the payload's JSON without `rev`. Changes exactly when something sent changes."},
+        "room": {"type": "string", "description": "Nunki only: present when the announcer stands in a room, and `boards` holds only that room's boards."},
+        "selection": {
+          "description": "Polis only: present when the station prints part of the round, and `boards` holds only that part.",
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["room", "boards", "categories"],
+          "properties": {
+            "room": {"type": "string", "description": "The room's name when the station stands in a real room, otherwise empty."},
+            "boards": {"type": "string", "description": "Board numbers as text: `1-20, 35`."},
+            "categories": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-countdown.schema.json",
+  "title": "countdown (server to Nunki)",
+  "description": "Start (or, with an id already running, move) a countdown to a round. Seconds left, never a time of day: the device adds them to its own monotonic clock.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "round",
+    "seconds_left",
+    "id"
+  ],
+  "properties": {
+    "type": {
+      "const": "countdown"
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "seconds_left": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

@@ -12,8 +12,15 @@ defmodule Polis.Join do
   address; nobody sees a key.
 
   Any prefix before `/p/` is accepted, so an OpenPairings that lives under
-  a sub-path works. A link for the other hall product (`/p/nunki/...`, the
-  announcer) is refused in words, before anything is sent.
+  a sub-path works. A link for another hall app - the announcer's
+  (`/p/nunki/...`) or the Manubrium phone app's (`manubrium://connect?...`)
+  - is refused in words, naming the app, before anything is sent: the code
+  stays unspent for the app it was made for.
+
+  The link, the code in it (43 base64url characters, or 16 base32 from
+  before the codes were unified - both read) and the answers are
+  OpenPairings' `hall-link-v1` contract, vendored in
+  `priv/contracts/vendor/openpairings/hall-link-v1/`.
   """
 
   alias Polis.Protocol
@@ -71,6 +78,14 @@ defmodule Polis.Join do
 
   @doc "The join link's parts, `{:error, :not_a_link}` or `{:error, {:wrong_product, id}}`."
   def parse(link) when is_binary(link) do
+    if String.starts_with?(String.downcase(String.trim(link)), "manubrium:"),
+      do: {:error, {:wrong_product, "manubrium"}},
+      else: parse_http(link)
+  end
+
+  def parse(_other), do: {:error, :not_a_link}
+
+  defp parse_http(link) do
     with {:ok, %URI{scheme: scheme, host: host, path: path} = uri}
          when scheme in ["http", "https"] and is_binary(host) and host != "" and is_binary(path) <-
            URI.new(String.trim(link)),
@@ -85,7 +100,20 @@ defmodule Polis.Join do
     end
   end
 
-  def parse(_other), do: {:error, :not_a_link}
+  @doc """
+  What a pairing link means to a print station, as the contract's
+  `pairing-link` examples spell it: `{:ok, %{"server" => base url, "code" => code}}`
+  for a Polis link - the base URL being everything before `/p/polis/join/`
+  - or the error `parse/1` gives.
+  """
+  def pairing(link) do
+    with {:ok, uri} <- parse(link) do
+      [_, prefix, code] = Regex.run(~r{^(.*)/p/[a-z0-9_-]+/join/([^/]+)/?$}, uri.path)
+      path = if prefix == "", do: nil, else: prefix
+      server = URI.to_string(%URI{scheme: uri.scheme, host: uri.host, port: uri.port, path: path})
+      {:ok, %{"server" => server, "code" => code}}
+    end
+  end
 
   # Where the socket is: the same host and port as the join link, ws for
   # http, wss for https. The path comes from the server (absolute), so a

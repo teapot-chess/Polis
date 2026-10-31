@@ -149,7 +149,7 @@ msgstr ""
 
 #: c:/Users/jorian/AppData/Local/Temp/claude/C--Users-jorian-Desktop-02cloud-VPS-projects-openpairings/65f91aaf-60db-40d5-822a-f101e889fdbc/scratchpad/polis_hosted/plugins/polis/lib/openpairings_polis_web/live/stations_live.ex:293
 #, elixir-autogen, elixir-format
-msgid "Open Polis on the hall PC, paste the link (or scan the code) and press Join. The link works once, for %{minutes} minutes."
+msgid "Paste this link into Polis on the hall PC and press Join, or scan the code with Manubrium on your phone to pass the link on to that PC. The link works once, for %{minutes} minutes."
 msgstr ""
 
 #: c:/Users/jorian/AppData/Local/Temp/claude/C--Users-jorian-Desktop-02cloud-VPS-projects-openpairings/65f91aaf-60db-40d5-822a-f101e889fdbc/scratchpad/polis_hosted/plugins/polis/lib/openpairings_polis_web/live/stations_live.ex:381

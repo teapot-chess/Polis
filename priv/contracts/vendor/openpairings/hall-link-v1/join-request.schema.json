@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/join-request.schema.json",
+  "title": "POST <join link> request",
+  "description": "A device spending its one-time pairing code: POSTed as JSON to the very address of the pairing link (`https://<server>/p/<app>/join/<code>`). No session, no CSRF token, no sign-in: the code is the credential.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "v",
+    "device"
+  ],
+  "properties": {
+    "v": {
+      "$ref": "common.schema.json#/definitions/version"
+    },
+    "device": {
+      "$ref": "common.schema.json#/definitions/device"
+    },
+    "name": {
+      "type": "string",
+      "description": "What the machine calls itself; the device id when empty."
+    },
+    "software": {
+      "type": "string"
+    }
+  }
+}
