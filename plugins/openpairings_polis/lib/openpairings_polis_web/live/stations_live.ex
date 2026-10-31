@@ -293,7 +293,7 @@ defmodule OpenPairingsPolisWeb.StationsLive do
 
             <p class="hint">
               {gettext(
-                "Open Polis on the hall PC, paste the link (or scan the code) and press Join. The link works once, for %{minutes} minutes.",
+                "Paste this link into Polis on the hall PC and press Join, or scan the code with Manubrium on your phone to pass the link on to that PC. The link works once, for %{minutes} minutes.",
                 minutes: Stations.code_minutes()
               )}
             </p>

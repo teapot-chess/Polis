@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-settings-nunki.schema.json",
+  "title": "settings (server to Nunki)",
+  "description": "The announcer's name and room as the server holds them: after `welcome` (before `round`) and whenever they change, never twice the same in a row - except with `error`, which answers a request that was turned down and carries what still holds. The device shows this, not what it asked for.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "name",
+    "room",
+    "rooms_available"
+  ],
+  "properties": {
+    "type": {
+      "const": "settings"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "room": {
+      "type": "string",
+      "description": "A room of the tournament, empty for none, or free text from before the tournament had rooms (which restricts nothing)."
+    },
+    "rooms_available": {
+      "$ref": "common.schema.json#/definitions/room_names"
+    },
+    "error": {
+      "type": "string",
+      "enum": [
+        "room"
+      ]
+    }
+  }
+}

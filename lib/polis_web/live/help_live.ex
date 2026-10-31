@@ -44,15 +44,17 @@ defmodule PolisWeb.HelpLive do
           <h2>Aansluiten bij een toernooi</h2>
           <ol>
             <li>
-              In OpenPairings: Instellingen van het toernooi → Printstation → "Printstation toevoegen". Er verschijnt een link, goed voor één station en vijftien minuten.
+              In OpenPairings: Instellingen van het toernooi → Printstation → "Printstation toevoegen". Er verschijnt een link, als tekst en als QR-code, goed voor één station en vijftien minuten.
             </li>
-            <li>Plak de link in het veld "Aansluiten bij een toernooi" op deze pagina.</li>
+            <li>
+              Plak de link in het veld "Aansluiten bij een toernooi" op deze pagina. Staat OpenPairings op een ander toestel open, scan de QR-code dan met Manubrium op je telefoon: Manubrium herkent een link voor Polis en laat je hem kopiëren of delen, zodat hij op deze pc belandt.
+            </li>
             <li>
               Druk op "Aansluiten". Het toernooi staat dan in de lijst, met een groen bolletje zodra de verbinding open is.
             </li>
           </ol>
           <p>
-            Een sleutel hoef je nooit te zien of te typen; Polis haalt hem zelf op. Is de link verlopen of al gebruikt, maak dan een nieuwe. Een link voor een ander zaalprogramma (bijvoorbeeld de omroeper) werkt hier niet, en dat zegt de pagina ook.
+            Een sleutel hoef je nooit te zien of te typen; Polis haalt hem zelf op. Is de link verlopen of al gebruikt, maak dan een nieuwe. Een link voor een ander zaalprogramma (de omroeper Nunki, of de Manubrium-app) werkt hier niet: de pagina zegt voor welk programma hij is, en de code blijft onaangeroerd voor dat programma. Een station dat al aangesloten is, blijft gewoon aangesloten; de link heb je maar één keer nodig.
           </p>
         </section>
 
@@ -187,15 +189,17 @@ defmodule PolisWeb.HelpLive do
           <h2>Joining a tournament</h2>
           <ol>
             <li>
-              In OpenPairings: the tournament's Settings → Print station → "Add a print station". A link appears, good for one station and fifteen minutes.
+              In OpenPairings: the tournament's Settings → Print station → "Add a print station". A link appears, as text and as a QR code, good for one station and fifteen minutes.
             </li>
-            <li>Paste the link into the "Join a tournament" field on this page.</li>
+            <li>
+              Paste the link into the "Join a tournament" field on this page. With OpenPairings open on another device, scan the QR code with Manubrium on your phone: Manubrium recognises a Polis link and lets you copy or share it, so it reaches this PC.
+            </li>
             <li>
               Press "Join". The tournament is then in the list, with a green dot once the line is up.
             </li>
           </ol>
           <p>
-            You never see or type a key; Polis fetches it itself. When the link is expired or used, make a new one. A link for another hall program (the announcer, say) does not work here, and the page says so.
+            You never see or type a key; Polis fetches it itself. When the link is expired or used, make a new one. A link for another hall app (Nunki, the announcer, or the Manubrium phone app) does not work here: the page says which app it is for, and its code stays unspent for that app. A station that has joined stays joined; the link is needed once.
           </p>
         </section>
 

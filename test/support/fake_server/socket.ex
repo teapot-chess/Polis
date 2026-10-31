@@ -12,6 +12,7 @@ defmodule Polis.FakeServer.Socket do
 
   def handle_in({text, opcode: :text}, state) do
     {:ok, frame} = Protocol.decode(text)
+    update(state.agent, &%{&1 | received: [frame | &1.received]})
     handle(frame, state)
   end
 

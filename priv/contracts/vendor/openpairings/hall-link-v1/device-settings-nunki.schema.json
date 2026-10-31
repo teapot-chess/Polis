@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-settings-nunki.schema.json",
+  "title": "settings (Nunki to server)",
+  "description": "A request to change the announcer's name and/or room; a key left out stays as it is. Answered by the server's own `settings`. `room` is the name of one of `rooms_available` (trimmed, any case) or empty for none.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type"
+  ],
+  "properties": {
+    "type": {
+      "const": "settings"
+    },
+    "name": {
+      "type": "string"
+    },
+    "room": {
+      "type": "string"
+    }
+  }
+}

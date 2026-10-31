@@ -54,3 +54,8 @@ __pycache__/
 # Release builds made by hand: the installer's output, the archives.
 /installer_out/
 /dist/
+
+# A plugin is compiled inside an OpenPairings checkout, never here; what a
+# stray `mix test` in its directory leaves behind is not source.
+/plugins/*/_build/
+/plugins/*/deps/

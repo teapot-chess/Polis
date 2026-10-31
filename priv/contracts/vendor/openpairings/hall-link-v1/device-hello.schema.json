@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-hello.schema.json",
+  "title": "hello (device to server)",
+  "description": "Always the first frame on the line, from both apps. The key travels here and nowhere else. Until it is answered by `welcome` the server listens to nothing else, and a line that says nothing for ten seconds is closed.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "v",
+    "device",
+    "key",
+    "name",
+    "software"
+  ],
+  "properties": {
+    "type": {
+      "const": "hello"
+    },
+    "v": {
+      "$ref": "common.schema.json#/definitions/version"
+    },
+    "device": {
+      "$ref": "common.schema.json#/definitions/device"
+    },
+    "key": {
+      "$ref": "common.schema.json#/definitions/key"
+    },
+    "name": {
+      "type": "string",
+      "description": "What the machine calls itself."
+    },
+    "software": {
+      "type": "string",
+      "description": "`nunki 0.5.0`, `polis 0.5.0`."
+    }
+  }
+}

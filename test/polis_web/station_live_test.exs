@@ -56,7 +56,19 @@ defmodule PolisWeb.StationLiveTest do
     |> render_submit()
 
     eventually(fn -> has_element?(view, "#join-message.error") end)
-    assert render(element(view, "#join-message")) =~ "another hall program"
+    assert render(element(view, "#join-message")) =~ "Nunki"
+    assert State.tournaments() == []
+  end
+
+  test "a Manubrium link is refused, naming the app it is for", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> form("#join-form", join: %{link: "manubrium://connect?secret=abc&server=https%3A%2F%2Fx"})
+    |> render_submit()
+
+    eventually(fn -> has_element?(view, "#join-message.error") end)
+    assert render(element(view, "#join-message")) =~ "Manubrium"
     assert State.tournaments() == []
   end
 

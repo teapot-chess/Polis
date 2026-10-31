@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/join-response.schema.json",
+  "title": "POST <join link> answer, 200",
+  "description": "Joined. The key exists only in this answer (the server keeps its SHA-256). `socket` is an absolute path on the same host and port as the link: ws for http, wss for https.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "key",
+    "socket",
+    "server",
+    "tournament"
+  ],
+  "properties": {
+    "key": {
+      "$ref": "common.schema.json#/definitions/key"
+    },
+    "socket": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "`/p/nunki/link`, `/p/polis/link` (with the server's sub-path, if any)."
+    },
+    "server": {
+      "type": "string"
+    },
+    "tournament": {
+      "$ref": "common.schema.json#/definitions/tournament_ref"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-status-nunki.schema.json",
+  "title": "status (Nunki to server)",
+  "description": "What the announcer is doing: after `welcome` and whenever it changes, never twice the same.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "voice",
+    "speaking"
+  ],
+  "properties": {
+    "type": {
+      "const": "status"
+    },
+    "voice": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The voice that would speak the tournament's language, a label, or null when there is none."
+    },
+    "speaking": {
+      "type": "boolean"
+    }
+  }
+}

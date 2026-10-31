@@ -24,8 +24,13 @@ the plugin checks the caller itself):
 | `POST /p/polis/join/:code`  | A station joining with a one-time code (`JoinPlug`)          |
 | `GET /p/polis/link`         | The station's WebSocket (`LinkPlug` -> `LinkSocket`)         |
 
-The wire format of both is the hall-link protocol, version 1, in
-`docs/protocol.md`.
+The wire format of both is OpenPairings' contract `hall-link-v1`
+(`priv/contracts/hall-link-v1` there, vendored here in
+`priv/contracts/vendor/openpairings/hall-link-v1/`); `docs/protocol.md` has
+only what Polis does with it. The join answers are the contract's
+`join-error` codes: 404 `unknown_code`, 410 `used` or `expired`, 409
+`version` (with `v`), 400 `bad_request` (a body that is not a station;
+until the contract it was a 422 `device`), 429 `too_many_attempts`.
 
 The plugin adds the feature `polis_print_station`, in the Belgian pack
 (`federation: "BEL"`) of the account's Features page. With it on, a
@@ -47,8 +52,12 @@ still remove it from the page, which keeps listing what had joined).
    station) the arbiter presses "Add a print station".
    The page shows a join link `https://<host>/p/polis/join/<code>` (built
    from `PairingsEngineWeb.Endpoint.url()`), a copy button and a QR code.
-   The code is 16 base32 characters, good once, for 15 minutes, bound to
-   that tournament; only its SHA-256 is stored.
+   The code is the one every hall app uses: 32 random bytes, base64url (43
+   characters), good once, for 15 minutes, bound to that tournament; only
+   its SHA-256 is stored. A code from before (16 base32 characters, any
+   case) is still taken until it runs out. The page says to paste it into
+   Polis, or to scan the QR code with Manubrium on a phone, which passes
+   the link on to the hall PC.
 2. Polis on the hall PC posts to that link and gets a key (32 random bytes,
    base64url). Only the key's SHA-256 is stored. Joining the same tournament
    again from the same device replaces the key and undoes a removal.
@@ -227,7 +236,13 @@ fix here.
 
 The plugin's tests need OpenPairings around them (`ConnCase`, the accounts,
 the tournaments, `PairingsEngine.BoardLinkFixtures`), so they run in an
-OpenPairings build:
+OpenPairings build. CI does exactly that on every push and pull request
+(`.github/workflows/ci.yml`, job `plugin`): OpenPairings' `main` checked
+out beside this repository, the hosted edition with `PAIRINGS_PLUGINS_DIR`
+pointing at this `plugins/`, compiled with warnings as errors, formatted by
+OpenPairings' rules, and the whole of `plugins/openpairings_polis/test`
+run. `hall_link_contract_test.exs` holds the server half to the vendored
+contract (`OpenPairingsPolis.Contract`). By hand:
 
 ```sh
 # from a worktree of OpenPairings, never its own checkout (Git Bash)
@@ -236,10 +251,7 @@ PAIRINGS_EDITION=hosted \
 PAIRINGS_PLUGINS_DIR="<polis>/plugins" \
 PAIRINGS_PLUGINS=openpairings_polis \
 MIX_TEST_PARTITION=polis \
-  mix test "<polis>/plugins/openpairings_polis/test/openpairings_polis_web/join_plug_test.exs" \
-           "<polis>/plugins/openpairings_polis/test/openpairings_polis_web/link_socket_test.exs" \
-           "<polis>/plugins/openpairings_polis/test/openpairings_polis/round_payload_test.exs" \
-           "<polis>/plugins/openpairings_polis/test/openpairings_polis_web/stations_live_test.exs"
+  mix test "<polis>/plugins/openpairings_polis/test"
 ```
 
 `MIX_BUILD_PATH` drops the per-environment subdirectory, so a dev compile

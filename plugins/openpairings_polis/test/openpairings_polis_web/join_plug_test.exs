@@ -74,7 +74,7 @@ defmodule OpenPairingsPolisWeb.JoinPlugTest do
   end
 
   test "a body without a device is refused", %{code: code} do
-    assert json_response(join(code, Map.delete(@body, :device)), 422)
+    assert json_response(join(code, Map.delete(@body, :device)), 400)
   end
 
   test "joining again from the same device gives the station back a new key", %{

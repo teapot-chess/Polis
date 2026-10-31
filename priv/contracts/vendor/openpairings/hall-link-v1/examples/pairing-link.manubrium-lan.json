@@ -1,0 +1,7 @@
+{
+  "app": "manubrium",
+  "link": "manubrium://connect?secret=Xq3vN8pK2mW7tR4yB6cD9fH1jL5nP0sU-aE_gI2kM4o&server=http%3A%2F%2F192.168.1.20%3A4000",
+  "server": "http://192.168.1.20:4000",
+  "code": "Xq3vN8pK2mW7tR4yB6cD9fH1jL5nP0sU-aE_gI2kM4o",
+  "note": "A desktop copy in the hall, plain http on the hall's own network."
+}

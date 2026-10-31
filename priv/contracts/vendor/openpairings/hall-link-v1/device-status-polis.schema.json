@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-status-polis.schema.json",
+  "title": "status (Polis to server)",
+  "description": "What the print station has: after `welcome` and whenever it changes, never twice the same.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "printer",
+    "last_printed_round"
+  ],
+  "properties": {
+    "type": {
+      "const": "status"
+    },
+    "printer": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The chosen printer's name, or null."
+    },
+    "last_printed_round": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "description": "The highest round of this tournament whose sheets came out of the printer, or null."
+    }
+  }
+}

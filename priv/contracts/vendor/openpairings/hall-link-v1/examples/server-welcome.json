@@ -1,0 +1,9 @@
+{
+  "type": "welcome",
+  "v": 1,
+  "server": "pairings.cloud",
+  "tournament": {
+    "id": 42,
+    "name": "Open Brugge"
+  }
+}

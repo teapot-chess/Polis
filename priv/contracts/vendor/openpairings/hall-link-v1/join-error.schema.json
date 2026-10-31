@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/join-error.schema.json",
+  "title": "POST <join link> answer, not 200",
+  "description": "Every refusal, by status: 400 `bad_request` or `too_large` (not a device describing itself), 404 `unknown_code`, 410 `used` or `expired` (also a code whose app was switched off for the account), 409 `version` (with the `v` the server speaks), 429 `too_many_attempts` (wrong codes from one address). A device decides by the status alone; the body is for people and logs.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "error"
+  ],
+  "properties": {
+    "error": {
+      "type": "string",
+      "enum": [
+        "bad_request",
+        "too_large",
+        "unknown_code",
+        "used",
+        "expired",
+        "version",
+        "too_many_attempts"
+      ]
+    },
+    "v": {
+      "$ref": "common.schema.json#/definitions/version"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/device-settings-polis.schema.json",
+  "title": "settings (Polis to server)",
+  "description": "A request to change the station's name, room or share; a key left out stays as it is. Answered by the server's own `settings`, with `error` when it was turned down.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type"
+  ],
+  "properties": {
+    "type": {
+      "const": "settings"
+    },
+    "name": {
+      "type": "string"
+    },
+    "room": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "boards": {
+      "type": "string",
+      "description": "Board numbers as text: `1-20, 35, 40-45`."
+    }
+  }
+}

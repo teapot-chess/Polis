@@ -19,10 +19,12 @@ defmodule Polis.FakeServer do
       Agent.start_link(fn ->
         %{
           codes: MapSet.new(Keyword.get(opts, :codes, ["K7Q-4MD"])),
-          key: "fake-key-" <> Integer.to_string(System.unique_integer([:positive])),
-          tournament: %{"id" => "t-1", "name" => "Club Open"},
+          # A key as OpenPairings makes one: 32 random bytes, base64url.
+          key: :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false),
+          tournament: %{"id" => 1, "name" => "Club Open"},
           identity: nil,
           statuses: [],
+          received: [],
           sockets: [],
           round: nil,
           settings: nil,
@@ -73,6 +75,9 @@ defmodule Polis.FakeServer do
 
   @doc "The `status` frames received, oldest first."
   def statuses(server), do: server |> get(:statuses) |> Enum.reverse()
+
+  @doc "Every text frame the station sent, decoded, oldest first."
+  def received(server), do: server |> get(:received) |> Enum.reverse()
 
   @doc "The `settings` frames the station sent, oldest first."
   def settings_sent(server), do: server |> get(:settings_sent) |> Enum.reverse()

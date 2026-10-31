@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-countdown-cancel.schema.json",
+  "title": "countdown_cancel (server to Nunki)",
+  "description": "Cancel the countdown with this id, and only that one.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "id"
+  ],
+  "properties": {
+    "type": {
+      "const": "countdown_cancel"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

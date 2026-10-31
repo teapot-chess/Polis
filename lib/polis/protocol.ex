@@ -2,7 +2,9 @@ defmodule Polis.Protocol do
   @moduledoc """
   The hall link, version 1, as Polis speaks it: JSON text frames over one
   WebSocket per joined tournament, each an object with a `"type"`.
-  `docs/protocol.md` is the same thing in prose, and the OpenPairings
+  OpenPairings' `hall-link-v1` contract (vendored in
+  `priv/contracts/vendor/openpairings/hall-link-v1/`) is the same thing as
+  JSON Schemas, `docs/protocol.md` what Polis does with it, and the OpenPairings
   plugin (`plugins/openpairings_polis`) is the other end.
 
   Polis to server: `hello` (always first, with the key), `status`

@@ -1,0 +1,45 @@
+{
+  "type": "round",
+  "round": {
+    "tournament": {
+      "id": 42,
+      "name": "Open Brugge",
+      "city": "Brugge",
+      "dates": "2026-11-07 - 2026-11-09"
+    },
+    "round": 3,
+    "rounds": 7,
+    "published_at": "2026-11-08T13:02:00Z",
+    "locale": "nl",
+    "rating_label": "Elo",
+    "team": false,
+    "boards": [
+      {
+        "board": "1",
+        "white": {
+          "name": "Janssens, Anna",
+          "spoken": "Anna Janssens",
+          "title": "WIM",
+          "rating": 2210,
+          "federation": "BEL",
+          "club": "KGSRL",
+          "number": 3,
+          "score": "2"
+        },
+        "black": {
+          "name": "Peeters, Bart",
+          "spoken": "Bart Peeters",
+          "title": "FM",
+          "rating": 2285,
+          "federation": "BEL",
+          "club": "Brugse SM",
+          "number": 1,
+          "score": "2"
+        },
+        "bye": null
+      }
+    ],
+    "room": "Main hall",
+    "rev": "bc7a166da2f1469b740aba90663166ccf86efdecb44ab3fbcbcb6a6f84e41b9c"
+  }
+}

@@ -1,13 +1,16 @@
 defmodule OpenPairingsPolisWeb.JoinPlug do
   @moduledoc """
   `POST /p/polis/join/:code` - a print station joining with a one-time
-  code. JSON in (`{"v":1,"device","name","software"}`), JSON out:
+  code. JSON in (`{"v":1,"device","name","software"}`), JSON out, as
+  OpenPairings' `hall-link-v1` contract has it (`join-request`,
+  `join-response`, `join-error`):
 
     * 200 `{"key","socket","server","tournament":{"id","name"}}`
-    * 404 a code nobody made; 410 one used or expired
-    * 409 a protocol version this side does not speak
-    * 422 a body that is not a station describing itself
-    * 429 too many wrong codes from one address
+    * 404 `unknown_code`: a code nobody made
+    * 410 `used` or `expired`
+    * 409 `version` (with the `v` spoken here)
+    * 400 `bad_request`: a body that is not a station describing itself
+    * 429 `too_many_attempts`: too many wrong codes from one address
 
   Mounted without a pipeline (`PairingsEngine.Plugin.http_routes/0`): no
   session, no CSRF, no sign-in. The code is the only credential, which is
@@ -38,12 +41,12 @@ defmodule OpenPairingsPolisWeb.JoinPlug do
         json(conn, 409, %{error: "version", v: @protocol})
 
       not RateLimit.allow?(:board_link_auth, limit_key) ->
-        json(conn, 429, %{error: "slow down"})
+        json(conn, 429, %{error: "too_many_attempts"})
 
       true ->
         case station_attrs(params) do
           {:ok, attrs} -> redeem(conn, code, attrs, limit_key)
-          :error -> json(conn, 422, %{error: "device"})
+          :error -> json(conn, 400, %{error: "bad_request"})
         end
     end
   end
@@ -60,11 +63,11 @@ defmodule OpenPairingsPolisWeb.JoinPlug do
 
       {:error, :not_found} ->
         RateLimit.record(:board_link_auth, limit_key)
-        json(conn, 404, %{error: "unknown"})
+        json(conn, 404, %{error: "unknown_code"})
 
-      {:error, :gone} ->
+      {:error, reason} when reason in [:used, :expired] ->
         RateLimit.record(:board_link_auth, limit_key)
-        json(conn, 410, %{error: "used or expired"})
+        json(conn, 410, %{error: Atom.to_string(reason)})
     end
   end
 

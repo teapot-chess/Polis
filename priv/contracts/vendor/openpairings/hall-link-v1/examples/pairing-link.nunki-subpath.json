@@ -1,0 +1,7 @@
+{
+  "app": "nunki",
+  "link": "https://club.example.org/chess/p/nunki/join/Xq3vN8pK2mW7tR4yB6cD9fH1jL5nP0sU-aE_gI2kM4o",
+  "server": "https://club.example.org/chess",
+  "code": "Xq3vN8pK2mW7tR4yB6cD9fH1jL5nP0sU-aE_gI2kM4o",
+  "note": "OpenPairings under a sub-path: everything before /p/ is the server's."
+}

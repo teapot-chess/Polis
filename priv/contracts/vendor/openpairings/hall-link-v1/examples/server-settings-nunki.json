@@ -1,0 +1,9 @@
+{
+  "type": "settings",
+  "name": "Annex speaker",
+  "room": "Annex",
+  "rooms_available": [
+    "Main hall",
+    "Annex"
+  ]
+}

@@ -1,8 +1,8 @@
 defmodule OpenPairingsPolis.RoundPayload do
   @moduledoc """
   The round a station is sent: the hall-link protocol's round payload,
-  identical in shape to the hall announcer's (see `docs/protocol.md` in the
-  Polis repository).
+  identical in shape to the hall announcer's: `round_payload` in
+  OpenPairings' `hall-link-v1` contract, vendored in the Polis repository.
 
   The boards are the core's printed pairing list
   (`PairingsEngineWeb.PrintController.pairing_list/2`): hidden pairings
