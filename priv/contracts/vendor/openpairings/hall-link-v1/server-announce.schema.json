@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-announce.schema.json",
+  "title": "announce (server to Nunki)",
+  "description": "Say this in the hall now: a canned announcement (`canned`, which the device words in its own language) or free text (`text`, said as it is). Either one is enough; with both, a device that knows the canned key says that and one that does not says the text. `id` is made by the server for each announcement, so a frame delivered twice is said once.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["type", "id"],
+  "anyOf": [{"required": ["canned"]}, {"required": ["text"]}],
+  "properties": {
+    "type": {"const": "announce"},
+    "id": {"type": "string", "minLength": 1},
+    "canned": {
+      "type": "string",
+      "enum": ["silence", "phones", "seats", "results", "arbiter"],
+      "description": "silence: silence please; phones: switch off mobile phones; seats: take your seats; results: hand in your results; arbiter: please come to the arbiter's desk."
+    },
+    "text": {"type": "string", "minLength": 1, "maxLength": 300}
+  }
+}

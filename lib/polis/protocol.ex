@@ -11,11 +11,11 @@ defmodule Polis.Protocol do
   (`printer`, `last_printed_round`), `settings` (any of `name`, `room`,
   `categories`, `boards`: a change the station's page asked for), `leave`.
 
-  Server to Polis: `welcome`, `settings` (`name`, `room`, `categories`,
+  Server to Polis: `welcome`, `standings` (held until a `print` asks for them), `settings` (`name`, `room`, `categories`,
   `boards`, `categories_available`, and `error` when a change was turned
   down), `refused` (`version`, `key`, `revoked`), `round` (the round
   payload), `leave`, and `print` (`round`, `what`: `pairings`,
-  `placecards` or `both`).
+  `placecards`, `both`, `standings`, `playerlist` or `slips`).
   """
 
   @version 1

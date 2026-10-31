@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-print.schema.json",
   "title": "print (server to Polis)",
-  "description": "Print round N again (the arbiter pressed it in OpenPairings). Acted on only for the round the station holds; the server sends that round first.",
+  "description": "Print round N again (the arbiter pressed it in OpenPairings or in Manubrium). Acted on only for the round the station holds; the server sends that round first. `standings` prints the standings frame the server sent just before (`server-standings`); `playerlist` is the players of the round in alphabetical order with board and room; `slips` is one result slip per board. A station that does not know a `what` ignores the frame.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -23,6 +23,9 @@
       "enum": [
         "pairings",
         "placecards",
+        "standings",
+        "playerlist",
+        "slips",
         "both"
       ]
     }

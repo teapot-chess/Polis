@@ -1,0 +1,20 @@
+{
+  "type": "standings",
+  "tournament": {
+    "id": 42,
+    "name": "Open Brugge",
+    "city": "Brugge",
+    "dates": "2026-11-07 - 2026-11-09"
+  },
+  "round": 3,
+  "rounds": 7,
+  "locale": "nl",
+  "rating_label": "Elo",
+  "tiebreaks": ["Bch", "SB"],
+  "rows": [
+    {"rank": "1", "name": "Peeters, Bart", "title": "FM", "rating": 2285, "federation": "BEL", "club": "Brugse SM", "number": 1, "score": "3", "tiebreaks": ["6.5", "5.25"]},
+    {"rank": "2-3", "name": "Janssens, Anna", "title": "WIM", "rating": 2210, "federation": "BEL", "club": "KGSRL", "number": 3, "score": "2.5", "tiebreaks": ["6", "4.5"]},
+    {"rank": "2-3", "name": "Dubois, Claire", "title": "", "rating": 0, "federation": "FRA", "club": "", "number": 7, "score": "2.5", "tiebreaks": ["6", "4.5"]}
+  ],
+  "rev": "5d2f0c1a8e7b4936a1f0c2d8e9b47563fa01c2d3e4b5a69788796a5b4c3d2e1f"
+}

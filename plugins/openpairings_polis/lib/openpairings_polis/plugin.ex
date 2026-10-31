@@ -14,6 +14,7 @@ defmodule OpenPairingsPolis.Plugin do
   use Gettext, backend: OpenPairingsPolis.Gettext
 
   alias OpenPairingsPolis.Gettext, as: PolisGettext
+  alias OpenPairingsPolis.{StandingsPayload, Stations}
   alias PairingsEngine.Features
   alias PairingsEngine.Tournaments.Tournament
 
@@ -110,4 +111,52 @@ defmodule OpenPairingsPolis.Plugin do
 
   @impl true
   def migrations_path, do: Path.expand("../../priv/migrations", __DIR__)
+
+  # Manubrium's Hall page (the core's `PairingsEngineWeb.ManubriumApi.HallController`):
+  # who is joined and online, and the one command that is Polis's - print
+  # again. The feature is access here too: an account that switched the print
+  # station off has no stations to show and none to command.
+  @impl true
+  def hall_status(_scope, %Tournament{} = t) do
+    if Stations.feature_on?(t) do
+      %{
+        app: "polis",
+        devices:
+          for s <- Stations.list_stations(t.id) do
+            %{
+              id: s.id,
+              name: s.name,
+              room: Stations.room_name(s, t),
+              online: Stations.online?(s),
+              last_seen_at: s.last_seen_at
+            }
+          end,
+        countdown: nil
+      }
+    end
+  end
+
+  @impl true
+  def hall_command(_scope, %Tournament{} = t, {:print, what}) do
+    cond do
+      not Stations.feature_on?(t) ->
+        :unsupported
+
+      what not in Stations.print_whats() ->
+        {:error, :bad_what}
+
+      PairingsEngine.Tournaments.latest_published_round_number(t) == 0 ->
+        {:error, :no_round}
+
+      what == "standings" and StandingsPayload.build(t) == :none ->
+        {:error, :no_standings}
+
+      true ->
+        round = PairingsEngine.Tournaments.latest_published_round_number(t)
+        Stations.print_again(t.id, round, what)
+        {:ok, Stations.online_count(t.id)}
+    end
+  end
+
+  def hall_command(_scope, _tournament, _command), do: :unsupported
 end

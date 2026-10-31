@@ -137,7 +137,7 @@ defmodule OpenPairingsPolisWeb.StationsLive do
   def handle_event("close_join", _params, socket), do: {:noreply, assign(socket, join: nil)}
 
   def handle_event("print_again", %{"print" => %{"what" => what}}, socket)
-      when what in ["pairings", "placecards", "both"] do
+      when what in ["pairings", "placecards", "both", "standings", "playerlist", "slips"] do
     case socket.assigns.latest_round do
       0 ->
         {:noreply, assign(socket, error: gettext("No round is published yet."), note: nil)}
@@ -381,7 +381,10 @@ defmodule OpenPairingsPolisWeb.StationsLive do
                   options={[
                     {gettext("Pairings and place cards"), "both"},
                     {gettext("Pairings"), "pairings"},
-                    {gettext("Place cards"), "placecards"}
+                    {gettext("Place cards"), "placecards"},
+                    {gettext("Standings"), "standings"},
+                    {gettext("Player list"), "playerlist"},
+                    {gettext("Result slips"), "slips"}
                   ]}
                 />
                 <div class="actions">

@@ -33,4 +33,7 @@ defmodule PolisWeb.Components do
   def job_what(%{what: :test}), do: gettext("Test print")
   def job_what(%{what: :pairings, round: r}), do: gettext("Pairings, round %{n}", n: r)
   def job_what(%{what: :placecards, round: r}), do: gettext("Place cards, round %{n}", n: r)
+  def job_what(%{what: :standings, round: r}), do: gettext("Standings after round %{n}", n: r)
+  def job_what(%{what: :playerlist, round: r}), do: gettext("Player list, round %{n}", n: r)
+  def job_what(%{what: :slips, round: r}), do: gettext("Result slips, round %{n}", n: r)
 end

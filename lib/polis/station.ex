@@ -22,7 +22,10 @@ defmodule Polis.Station do
 
   A `print` from the server - "Print round N again" pressed in OpenPairings -
   queues what it names, for the round it names, when that is the round
-  this station holds.
+  this station holds: the pairings, the place cards, an alphabetical
+  player list, result slips, or the standings (the `standings` frame the
+  server sent just before, held here until then). A word the station does
+  not know prints nothing.
 
   ## Its name, its room, and its share of the round
 
@@ -130,7 +133,7 @@ defmodule Polis.Station do
             if new?, do: put_in(t, ["printed", key], rev), else: t
           end)
 
-        if new?, do: enqueue_round(t, payload, [:pairings, :placecards])
+        if new?, do: enqueue_round(t, payload, [:pairings, :placecards, :playerlist, :slips])
         broadcast_links()
         if new?, do: :printing, else: :kept
     end
@@ -138,24 +141,66 @@ defmodule Polis.Station do
 
   def round_received(_id, _payload), do: :ignored
 
-  @doc "A `print` from the server: `what` is pairings, placecards or both."
+  @doc """
+  A `print` from the server: `what` is pairings, placecards, both,
+  standings, playerlist or slips. A `what` this station does not know is
+  `:unknown_what`, and nothing is printed: the protocol grows, and an old
+  station must not print the wrong thing for a new word.
+  """
   def print_command(id, round, what) do
-    with %{"payload" => %{"round" => ^round} = payload} = t <- State.tournament(id) do
-      whats =
-        case what do
-          "pairings" -> [:pairings]
-          "placecards" -> [:placecards]
-          _both -> [:pairings, :placecards]
-        end
-
+    with %{"payload" => %{"round" => ^round} = payload} = t <- State.tournament(id),
+         [_ | _] = whats <- whats(what) do
       # Asked for by name, so printed whatever the switches say - but not
       # an empty sheet for a station none of whose boards are in it.
-      if for_this_station?(payload),
-        do: for(w <- whats, do: Queue.enqueue(job_attrs(t, payload, w)))
+      if for_this_station?(payload) do
+        for w <- whats, job = job_attrs(t, payload, w), do: Queue.enqueue(job)
+      end
 
       :ok
     else
+      [] -> :unknown_what
       _other -> :unknown_round
+    end
+  end
+
+  defp whats("pairings"), do: [:pairings]
+  defp whats("placecards"), do: [:placecards]
+  defp whats("both"), do: [:pairings, :placecards]
+  defp whats("playerlist"), do: [:playerlist]
+  defp whats("slips"), do: [:slips]
+  defp whats("standings"), do: [:standings]
+  defp whats(_other), do: []
+
+  @doc """
+  The standings the server sent (`standings` frame) for tournament `id`:
+  held until a `print` asks for them. They are not printed on arrival -
+  they go stale with every result, and a sheet nobody asked for is paper.
+  """
+  def standings_received(id, %{"rows" => rows} = frame) when is_list(rows) do
+    case State.tournament(id) do
+      nil ->
+        :ignored
+
+      _t ->
+        State.update_tournament(id, &Map.put(&1, "standings", Map.delete(frame, "type")))
+        broadcast_links()
+        :kept
+    end
+  end
+
+  def standings_received(_id, _frame), do: :ignored
+
+  @doc """
+  A page button: `what` (a string as in `print_command/3`) of the round
+  held now, whatever the switches say. Standings are the last ones the
+  server sent; `:nothing` when there is nothing held to print.
+  """
+  def print_now(id, what) do
+    with %{"payload" => %{"round" => round}} <- State.tournament(id),
+         :ok <- print_command(id, round, what) do
+      :ok
+    else
+      _other -> :nothing
     end
   end
 
@@ -253,6 +298,29 @@ defmodule Polis.Station do
 
   defp switch_on?(t, :pairings), do: t["print_pairings"] != false
   defp switch_on?(t, :placecards), do: t["print_placecards"] != false
+  # Not on until somebody says so: most halls have never wanted either.
+  defp switch_on?(t, :playerlist), do: t["print_playerlist"] == true
+  defp switch_on?(t, :slips), do: t["print_slips"] == true
+
+  # The standings are a frame of their own, held apart from the round; a
+  # job for them is made from that, or not at all.
+  defp job_attrs(t, _payload, :standings) do
+    case t["standings"] do
+      %{"rows" => _} = frame ->
+        %{
+          tournament: t["id"],
+          tournament_name: get_in(frame, ["tournament", "name"]) || t["name"],
+          round: frame["round"],
+          rev: frame["rev"],
+          what: :standings,
+          copies: 1,
+          payload: frame
+        }
+
+      _none ->
+        nil
+    end
+  end
 
   defp job_attrs(t, payload, what) do
     %{
@@ -285,8 +353,9 @@ defmodule Polis.Station do
 
   # --- the switches -------------------------------------------------------------------
 
-  def set_switch(id, which, on) when which in ["print_pairings", "print_placecards"],
-    do: State.update_tournament(id, &Map.put(&1, which, on == true))
+  def set_switch(id, which, on)
+      when which in ["print_pairings", "print_placecards", "print_playerlist", "print_slips"],
+      do: State.update_tournament(id, &Map.put(&1, which, on == true))
 
   def set_copies(id, n) when is_integer(n) and n in 1..5,
     do: State.update_tournament(id, &Map.put(&1, "copies", n))

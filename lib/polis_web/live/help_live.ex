@@ -80,9 +80,15 @@ defmodule PolisWeb.HelpLive do
             <li>
               "Ronde N opnieuw printen" in OpenPairings: wat het noemt, meteen.
             </li>
+            <li>
+              De spelerslijst en de uitslagstrookjes: niet vanzelf, tenzij je hun schakelaar aanzet (dan bij elke nieuwe ronde), en altijd met een knop "nu afdrukken" bij het toernooi. De stand komt van de server: de knop verschijnt zodra OpenPairings of Manubrium er een heeft gestuurd, en drukt die af.
+            </li>
           </ul>
           <p>
             Een tafelkaartje is een tentje: vouw het blad op de stippellijn, en elke kant leest goed voor wie ervoor zit. Wie een bye heeft, krijgt geen kaartje.
+          </p>
+          <p>
+            De spelerslijst staat op alfabet, met bord, kleur en (als het toernooi ruimtes heeft) de zaal: het blad voor op de deur. Een uitslagstrookje is er per bord met twee spelers, vier op een blad om uit te knippen, met de drie uitslagen om aan te kruisen en plaats voor beide handtekeningen. Een bye heeft er geen.
           </p>
         </section>
 
@@ -225,9 +231,15 @@ defmodule PolisWeb.HelpLive do
             <li>
               "Print round N again" in OpenPairings: what it names, at once.
             </li>
+            <li>
+              The player list and the result slips: not by themselves, unless you switch them on (then with every new round), and always with a "print now" button on the tournament. The standings come from the server: the button appears once OpenPairings or Manubrium has sent some, and prints those.
+            </li>
           </ul>
           <p>
             A place card is a tent: fold the sheet on the dashed line, and each side reads the right way up for whoever sits in front of it. A player with a bye gets no card.
+          </p>
+          <p>
+            The player list is alphabetical, with board, colour and (when the tournament has rooms) the room: the sheet for the door. A result slip is one per board with two players, four to a sheet to cut apart, with the three results to tick and room for both signatures. A bye has none.
           </p>
         </section>
 

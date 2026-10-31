@@ -230,7 +230,8 @@ defmodule OpenPairingsPolis.Stations do
   # Whether the account that owns `tournament` has the print station switched
   # on. Asked at every join and every hello: a station is a way to receive the
   # tournament's rounds, so turning the feature off has to cut it off.
-  defp feature_on?(%Tournament{user_id: user_id}) do
+  @doc "Whether the account that owns `tournament` has the print station switched on."
+  def feature_on?(%Tournament{user_id: user_id}) do
     user = user_id && Repo.get(User, user_id)
     Features.enabled?(user, Plugin.feature())
   end
@@ -535,11 +536,20 @@ defmodule OpenPairingsPolis.Stations do
     end
   end
 
-  @doc ~s(Tells every station of the tournament to print round `round` again: "pairings", "placecards" or "both".)
+  @print_whats ~w(pairings placecards both standings playerlist slips)
+
+  @doc "What a station can be asked to print again, as the `print` frame says it."
+  def print_whats, do: @print_whats
+
+  @doc ~s(Tells every station of the tournament to print round `round` again: one of `print_whats/0`.)
   def print_again(tournament_id, round, what)
-      when is_integer(round) and what in ["pairings", "placecards", "both"] do
+      when is_integer(round) and what in @print_whats do
     broadcast(tournament_id, {:polis_print, round, what})
   end
+
+  @doc "How many of the tournament's stations are online now: who a print goes to."
+  def online_count(tournament_id),
+    do: tournament_id |> list_stations() |> Enum.count(&online?/1)
 
   @doc "Online: a live socket that was heard from in the last #{@online_seconds} seconds."
   def online?(%Station{connected: true, last_seen_at: %DateTime{} = at}) do

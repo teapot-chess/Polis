@@ -62,6 +62,7 @@ defmodule OpenPairingsPolis.RoundPayload do
 
   defp payload(tournament, round, selection) do
     scores = Standings.player_scores_before_round(tournament, round.number)
+    rooms = Rooms.list(tournament)
 
     boards =
       round.pairings
@@ -75,6 +76,7 @@ defmodule OpenPairingsPolis.RoundPayload do
           "black" => player(p.black_player, tournament, scores),
           "bye" => if(is_nil(p.black_player), do: "bye")
         }
+        |> put_room(rooms, board)
       end)
 
     body = %{
@@ -96,6 +98,16 @@ defmodule OpenPairingsPolis.RoundPayload do
     body
     |> put_selection(selection)
     |> then(&Map.put(&1, "rev", rev(&1)))
+  end
+
+  # The room the board is in, for the player list and the result slips:
+  # only when the tournament has rooms, so a hall without them sends the
+  # same payload (and the same `rev`) as before there was a room column.
+  defp put_room(board, [], _label), do: board
+
+  defp put_room(board, rooms, label) do
+    room = Rooms.room_for(rooms, to_string(label))
+    Map.put(board, "room", if(room, do: room.name, else: ""))
   end
 
   defp selected?(_row, nil), do: true
@@ -181,7 +193,8 @@ defmodule OpenPairingsPolis.RoundPayload do
   defp score(v) when is_integer(v), do: Integer.to_string(v)
   defp score(v), do: to_string(v)
 
-  defp dates(%{start_date: s, end_date: e}) do
+  @doc false
+  def dates(%{start_date: s, end_date: e}) do
     case {s || "", e || ""} do
       {"", ""} -> ""
       {s, ""} -> s
@@ -198,7 +211,8 @@ defmodule OpenPairingsPolis.RoundPayload do
   # The column header the printed list uses for the same number (the print
   # controller's own reading, which is private there): "Elo" where FIDE
   # leads, "Nat." for a national list, "Rtg" for anything else.
-  defp rating_label(%{rating_method: method}) when method in ["FIDE", "FIDON", nil], do: "Elo"
-  defp rating_label(%{rating_method: method}) when method in ["NRO", "NIDOF"], do: "Nat."
-  defp rating_label(_tournament), do: "Rtg"
+  @doc false
+  def rating_label(%{rating_method: method}) when method in ["FIDE", "FIDON", nil], do: "Elo"
+  def rating_label(%{rating_method: method}) when method in ["NRO", "NIDOF"], do: "Nat."
+  def rating_label(_tournament), do: "Rtg"
 end

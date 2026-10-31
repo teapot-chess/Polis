@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/teapot-chess/openpairings/main/priv/contracts/hall-link-v1/server-standings.schema.json",
+  "title": "standings (server to Polis)",
+  "description": "The standings as they stand now, for the print station to hold. Sent only just before a `print` whose `what` is `standings`, never on its own: standings go stale with every result, and a sheet nobody asked for is paper. The station prints the last one it holds when the `print` arrives.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["type", "tournament", "round", "locale", "rating_label", "tiebreaks", "rows", "rev"],
+  "properties": {
+    "type": {"const": "standings"},
+    "tournament": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "city", "dates"],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/definitions/id"},
+        "name": {"type": "string"},
+        "city": {"type": "string"},
+        "dates": {"type": "string"}
+      }
+    },
+    "round": {"type": "integer", "minimum": 0, "description": "The standings after this many rounds with results (0 before the first)."},
+    "rounds": {"type": ["integer", "null"], "minimum": 1},
+    "locale": {"type": "string", "enum": ["en", "nl"]},
+    "rating_label": {"type": "string"},
+    "tiebreaks": {"type": "array", "items": {"type": "string"}, "description": "The tie-breaks the table applies, as the column headings: `Bch`, `SB`. May be empty."},
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["rank", "name", "title", "rating", "federation", "club", "number", "score", "tiebreaks"],
+        "properties": {
+          "rank": {"type": "string", "description": "As the Standings page shows it: `1`, a shared `3-4`."},
+          "name": {"type": "string", "description": "As stored: `Last, First`."},
+          "title": {"type": "string"},
+          "rating": {"type": "integer", "minimum": 0},
+          "federation": {"type": "string"},
+          "club": {"type": "string"},
+          "number": {"type": ["integer", "null"]},
+          "score": {"type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?$"},
+          "tiebreaks": {"type": "array", "items": {"type": "string"}, "description": "One value per entry of the top-level `tiebreaks`, already formatted."}
+        }
+      }
+    },
+    "rev": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

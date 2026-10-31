@@ -8,7 +8,8 @@ defmodule Polis.Queue do
       %{id, tournament, tournament_name, round, rev, what, copies, status,
         error, created_at, printed_at}
 
-  `what` is `:pairings`, `:placecards` or `:test`. `status` is one of
+  `what` is `:pairings`, `:placecards`, `:standings`, `:playerlist`,
+  `:slips` or `:test`. `status` is one of
 
     * `:waiting_printer` - no printer is chosen yet; it goes once one is;
     * `:queued` - waiting for the job before it;
@@ -336,6 +337,15 @@ defmodule Polis.Queue do
   defp layout(%{"what" => "placecards", "payload" => p}, paper, _printer) when is_map(p),
     do: {:ok, Layout.place_cards(p, paper)}
 
+  defp layout(%{"what" => "standings", "payload" => p}, paper, _printer) when is_map(p),
+    do: {:ok, Layout.standings(p, paper)}
+
+  defp layout(%{"what" => "playerlist", "payload" => p}, paper, _printer) when is_map(p),
+    do: {:ok, Layout.player_list(p, paper)}
+
+  defp layout(%{"what" => "slips", "payload" => p}, paper, _printer) when is_map(p),
+    do: {:ok, Layout.result_slips(p, paper)}
+
   defp layout(_other, _paper, _printer), do: :error
 
   defp read_source(id) do
@@ -377,7 +387,14 @@ defmodule Polis.Queue do
     }
   end
 
-  @whats %{"pairings" => :pairings, "placecards" => :placecards, "test" => :test}
+  @whats %{
+    "pairings" => :pairings,
+    "placecards" => :placecards,
+    "standings" => :standings,
+    "playerlist" => :playerlist,
+    "slips" => :slips,
+    "test" => :test
+  }
   @statuses %{
     "waiting_printer" => :waiting_printer,
     "queued" => :queued,
