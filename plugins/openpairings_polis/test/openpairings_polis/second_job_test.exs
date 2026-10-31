@@ -26,7 +26,10 @@ defmodule OpenPairingsPolis.SecondJobTest do
   defp rooms!(t) do
     {:ok, t} =
       Tournaments.update_tournament(t, %{
-        "rooms" => [%{"name" => "Hall A", "boards" => "1"}, %{"name" => "Hall B", "boards" => "2"}]
+        "rooms" => [
+          %{"name" => "Hall A", "boards" => "1"},
+          %{"name" => "Hall B", "boards" => "2"}
+        ]
       })
 
     t
@@ -101,6 +104,7 @@ defmodule OpenPairingsPolis.SecondJobTest do
       tournament: t
     } do
       Stations.subscribe(t.id)
+
       for what <- ~w(standings playerlist slips) do
         Contract.assert_valid!("server-print", %{type: "print", round: 1, what: what})
         assert :ok = Stations.print_again(t.id, 1, what)
