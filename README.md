@@ -185,4 +185,5 @@ pairings.cloud since 2026-10-18: [docs/openpairings-integration.md](docs/openpai
 
 ## Licence
 
-Apache-2.0. See `LICENSE` and `NOTICE`.
+Copyright (c) 2026 teapot-chess. All rights reserved. No licence is granted to
+use, copy, modify or distribute this software. See `LICENSE` and `NOTICE`.

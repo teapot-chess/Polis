@@ -15,6 +15,8 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+- [Change] **All rights reserved.** The Apache License 2.0 was a generous document for a program that has decided to keep its own counsel. LICENSE is now a short all-rights-reserved notice, and the README and NOTICE agree. Releases already published under the Apache licence keep it, since a licence granted cannot be taken back; the new terms apply from here on.
+
 ## [0.6.0] - 2026-11-01
 
 - [Feature] **Polis learns three more sheets: the standings, a player list, and result slips.** Pairings and place cards were a respectable two-thirds of what a hall wants taped to things. Now there is also the **standings** (name, federation, rating, points and up to four tie-breaks, paged and headed like the pairings), an **alphabetical player list** with board, colour and, where the tournament has rooms, the room (the sheet for the door, so the question "where am I" stops reaching the arbiter), and **result slips**: one per board, four to a sheet to cut apart, with the three results to tick and a line each for the signatures. The standings are sent by the server only when somebody asks (from OpenPairings, or from the Hall card in Manubrium), because standings that were printed on arrival would be wrong by the time anyone read them. The player list and the slips can also be switched on to come with every new round, and the tournament's page has a button to print each now. A `print` word this version does not know prints nothing, which is the polite thing to do with a word you do not know. The OpenPairings plug-in sends all of it, names each board's room, and answers Manubrium's questions about which stations are online. Dutch included.
