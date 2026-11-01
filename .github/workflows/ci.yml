@@ -159,7 +159,8 @@ jobs:
       # server that will run it, not against the one it was written for.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: teapot-chess/openpairings
+          repository: teapot-chess/openpairings-internal
+          token: ${{ secrets.CONTRACTS_TOKEN }}
           ref: main
           path: openpairings
 
@@ -222,3 +223,5 @@ jobs:
       # they then say.
       - name: Compare the vendored contract with OpenPairings'
         run: mix contracts.check
+        env:
+          CONTRACTS_TOKEN: ${{ secrets.CONTRACTS_TOKEN }}
