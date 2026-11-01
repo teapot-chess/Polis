@@ -1,7 +1,5 @@
 Polis
-Copyright 2026 Jorian Burssens
-
-This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+Copyright (c) 2026 teapot-chess. All rights reserved; see LICENSE.
 
 It includes the following, which keep their own notices:
 
@@ -25,7 +23,7 @@ It includes the following, which keep their own notices:
 
    rel/, .github/workflows/ and lib/polis/{updates,data_home,autostart,
    launcher_details}* came from Alnasl (https://github.com/teapot-chess/Alnasl),
-   by the same author and under the same licence; the join and the link
+   by the same owner; the join and the link
    (lib/polis/join.ex, lib/polis/link.ex) came from Arkab
    (https://github.com/teapot-chess/Arkab), likewise. Changes: the names,
    and what the program does.
