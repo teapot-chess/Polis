@@ -177,6 +177,13 @@ jobs:
           key: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
 
+      # OpenPairings pulls Ainalrami from its private twin, which this job's
+      # GITHUB_TOKEN cannot read; every github.com fetch goes through
+      # CONTRACTS_TOKEN instead, as in OpenPairings' own CI.
+      - name: Read the private Ainalrami twin
+        shell: bash
+        run: git config --global url."https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Install OpenPairings' dependencies
         working-directory: openpairings
         run: mix deps.get --check-locked
