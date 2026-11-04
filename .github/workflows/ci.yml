@@ -35,7 +35,7 @@ jobs:
     if: github.event_name != 'schedule'
     # Named, not `ubuntu-latest`: that label moves, and it should move here
     # when somebody decides it does.
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
 
     steps:
       # Actions are pinned to a commit, not to a tag: a tag can be moved, and
@@ -140,7 +140,7 @@ jobs:
   plugin:
     name: OpenPairings plugin tests (hosted edition)
     if: github.event_name != 'schedule'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     env:
       MIX_ENV: test
       # The hosted edition, with this repository's plugins and no others.
@@ -182,7 +182,14 @@ jobs:
       # CONTRACTS_TOKEN instead, as in OpenPairings' own CI.
       - name: Read the private Ainalrami twin
         shell: bash
-        run: git config --global url."https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        # Env, not `git config --global`: the runners share one home directory, and
+        # a post-job hook wipes ~/.gitconfig under whichever job is still running.
+        run: |
+          {
+            echo "GIT_CONFIG_COUNT=1"
+            echo "GIT_CONFIG_KEY_0=url.https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/.insteadOf"
+            echo "GIT_CONFIG_VALUE_0=https://github.com/"
+          } >> "$GITHUB_ENV"
 
       - name: Install OpenPairings' dependencies
         working-directory: openpairings
@@ -202,7 +209,7 @@ jobs:
 
   contracts:
     name: Contracts match their providers
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     env:
       MIX_ENV: test
 
