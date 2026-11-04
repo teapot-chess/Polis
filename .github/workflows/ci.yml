@@ -35,7 +35,7 @@ jobs:
     if: github.event_name != 'schedule'
     # Named, not `ubuntu-latest`: that label moves, and it should move here
     # when somebody decides it does.
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
 
     steps:
       # Actions are pinned to a commit, not to a tag: a tag can be moved, and
@@ -55,8 +55,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0-ex1.20-
 
       # --check-locked: a constraint edited in mix.exs without the lock file
       # would otherwise be resolved here, silently, into a set of
@@ -114,8 +114,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-otp29.0.5-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-otp29.0.5-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0.5-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0.5-ex1.20-
 
       - run: mix deps.get --check-locked
 
@@ -140,7 +140,7 @@ jobs:
   plugin:
     name: OpenPairings plugin tests (hosted edition)
     if: github.event_name != 'schedule'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     env:
       MIX_ENV: test
       # The hosted edition, with this repository's plugins and no others.
@@ -174,15 +174,22 @@ jobs:
           path: |
             openpairings/deps
             openpairings/_build
-          key: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
 
       # OpenPairings pulls Ainalrami from its private twin, which this job's
       # GITHUB_TOKEN cannot read; every github.com fetch goes through
       # CONTRACTS_TOKEN instead, as in OpenPairings' own CI.
       - name: Read the private Ainalrami twin
         shell: bash
-        run: git config --global url."https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        # Env, not `git config --global`: the runners share one home directory, and
+        # a post-job hook wipes ~/.gitconfig under whichever job is still running.
+        run: |
+          {
+            echo "GIT_CONFIG_COUNT=1"
+            echo "GIT_CONFIG_KEY_0=url.https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/.insteadOf"
+            echo "GIT_CONFIG_VALUE_0=https://github.com/"
+          } >> "$GITHUB_ENV"
 
       - name: Install OpenPairings' dependencies
         working-directory: openpairings
@@ -202,7 +209,7 @@ jobs:
 
   contracts:
     name: Contracts match their providers
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     env:
       MIX_ENV: test
 
@@ -219,8 +226,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-contracts-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-contracts-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-contracts-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-contracts-otp29.0-ex1.20-
 
       - run: mix deps.get --check-locked
 
