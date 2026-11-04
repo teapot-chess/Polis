@@ -18,6 +18,9 @@ defmodule Polis.Application do
     children =
       [
         Polis.Cmd.Reaper,
+        # The access PIN is read, or made, before the page can be asked for.
+        Polis.AccessPin.Throttle,
+        Polis.AccessPin.Boot,
         bounded({Phoenix.PubSub, name: Polis.PubSub}),
         bounded({Task.Supervisor, name: Polis.TaskSupervisor}),
         Polis.State,

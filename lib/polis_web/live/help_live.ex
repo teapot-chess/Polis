@@ -146,6 +146,18 @@ defmodule PolisWeb.HelpLive do
           </p>
         </section>
 
+        <section id="help-pin">
+          <h2>De pincode</h2>
+          <p>
+            Polis heeft altijd een pincode. Hij staat op het eigen scherm van het station, onder "Toegangspincode", en nergens anders. Standaard luistert Polis alleen naar deze computer, en dan vraagt niemand erom. Met
+            <span class="mono">POLIS_LISTEN=lan</span>
+            kunnen ook andere computers in het netwerk van de zaal de pagina openen; die vragen om de pincode, voor elke pagina en elke pdf.
+          </p>
+          <p>
+            Je kunt hem op het station zelf wijzigen of laten vervangen door een willekeurige van zes cijfers. Een nieuwe pincode geldt meteen: elke andere browser moet de nieuwe invullen. De pincode heeft 6 tot 64 tekens, zonder spatie aan het begin of einde. Weghalen kan niet. Wie vijf keer fout raadt, moet steeds langer wachten.
+          </p>
+        </section>
+
         <section id="help-data">
           <h2>Waar Polis bewaart wat het weet</h2>
           <p>
@@ -294,6 +306,18 @@ defmodule PolisWeb.HelpLive do
           </p>
           <p>
             A station that already used these things (updates off, start with Windows on, more than one copy, or a share of the round set) ticks it by itself the first time, so nobody loses anything. After that it is yours to decide.
+          </p>
+        </section>
+
+        <section id="help-pin">
+          <h2>The PIN</h2>
+          <p>
+            Polis always has a PIN. It is shown on the station's own screen, under "Access PIN", and nowhere else. By default Polis listens to this computer only, and then nobody is asked for it. With
+            <span class="mono">POLIS_LISTEN=lan</span>
+            other computers on the hall's network can open the page too; those are asked for the PIN, for every page and every PDF.
+          </p>
+          <p>
+            You can change it on the station itself, or have it replaced by a random one of six digits. A new PIN counts at once: every other browser has to give the new one. A PIN has 6 to 64 characters, with no space at the start or end. It cannot be removed. Whoever guesses wrong five times has to wait longer each time.
           </p>
         </section>
 

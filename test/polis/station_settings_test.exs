@@ -22,7 +22,7 @@ defmodule Polis.StationSettingsTest do
     Station.choose_printer("Hall printer")
     {:ok, id} = Station.join(FakeServer.link(server))
     eventually(fn -> Link.info(id).up? end)
-    %{server: server, id: id, conn: build_conn()}
+    %{server: server, id: id, conn: local_conn()}
   end
 
   test "the board-number reader agrees with the server's" do

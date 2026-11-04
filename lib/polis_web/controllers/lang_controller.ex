@@ -12,7 +12,7 @@ defmodule PolisWeb.LangController do
   # Back to the page that had the link, if it was one of ours.
   defp back(conn) do
     with [referer] <- get_req_header(conn, "referer"),
-         %URI{path: path} when path in ["/", "/help"] <- URI.parse(referer) do
+         %URI{path: path} when path in ["/", "/help", "/unlock"] <- URI.parse(referer) do
       path
     else
       _ -> "/"

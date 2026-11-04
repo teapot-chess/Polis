@@ -25,7 +25,7 @@ defmodule PolisWeb.SecondJobPageTest do
         "name" => "Club Open"
       })
 
-    %{conn: build_conn(), id: id}
+    %{conn: local_conn(), id: id}
   end
 
   defp standings_frame do
