@@ -14,7 +14,7 @@ defmodule PolisWeb.HelpLiveTest do
 
   @endpoint PolisWeb.Endpoint
 
-  @sections ~w(help-what help-join help-printer help-what-prints help-share help-queue help-update help-advanced help-data help-trouble)
+  @sections ~w(help-what help-join help-printer help-what-prints help-share help-queue help-update help-advanced help-pin help-data help-trouble)
 
   setup do
     start_supervised!(FakeReleases)
@@ -28,7 +28,7 @@ defmodule PolisWeb.HelpLiveTest do
       Updates.Checker.forget()
     end)
 
-    %{conn: build_conn()}
+    %{conn: local_conn()}
   end
 
   defp newer do

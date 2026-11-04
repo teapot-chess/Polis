@@ -34,7 +34,7 @@ defmodule PolisWeb.Layouts do
 
   attr :flash, :map, required: true
   attr :locale, :string, required: true
-  attr :page, :atom, values: [:station, :help], required: true
+  attr :page, :atom, values: [:station, :help, :unlock], required: true
   attr :subtitle, :string, default: nil
 
   attr :notice, :map,

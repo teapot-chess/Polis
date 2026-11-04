@@ -18,8 +18,10 @@ data_dir =
     true -> nil
   end
 
-# Who may open the page: this machine (the default, and the safe one: there
-# is no PIN in this version), or the hall's network with POLIS_LISTEN=lan.
+# Who may open the page: this machine (the default), or the hall's network with
+# POLIS_LISTEN=lan. There is always an access PIN (<data>/access-pin, made at
+# the first start, shown on the station's own page); this machine is never
+# asked for it, other machines always are. See PolisWeb.PinGate.
 lan? = System.get_env("POLIS_LISTEN") == "lan"
 listen = if lan?, do: {0, 0, 0, 0}, else: {127, 0, 0, 1}
 

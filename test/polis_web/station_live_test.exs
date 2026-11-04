@@ -14,7 +14,7 @@ defmodule PolisWeb.StationLiveTest do
   @endpoint PolisWeb.Endpoint
 
   setup do
-    %{conn: build_conn()}
+    %{conn: local_conn()}
   end
 
   defp printers_listed(view) do
@@ -105,10 +105,10 @@ defmodule PolisWeb.StationLiveTest do
     view |> element("#reprint-#{job.id}") |> render_click()
     assert_receive {:printed, %{title: "Polis test print"}}, 2_000
 
-    conn = get(build_conn(), "/jobs/#{job.id}/pdf")
+    conn = get(local_conn(), "/jobs/#{job.id}/pdf")
     assert conn.status == 200
     assert "%PDF-1.4" <> _ = conn.resp_body
-    assert get(build_conn(), "/jobs/..%2F..%2Fstate.json/pdf").status == 404
+    assert get(local_conn(), "/jobs/..%2F..%2Fstate.json/pdf").status == 404
   end
 
   test "a changed round shows its Reprint", %{conn: conn} do

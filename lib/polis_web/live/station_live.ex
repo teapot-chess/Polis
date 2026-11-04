@@ -51,7 +51,10 @@ defmodule PolisWeb.StationLive do
        printers: nil,
        printers_error: nil,
        drafts: %{},
-       station_notes: %{}
+       station_notes: %{},
+       pin_form: to_form(%{"value" => ""}, as: :pin),
+       pin_error: nil,
+       pin: pin_for(socket)
      )
      |> load()}
   end
@@ -78,6 +81,48 @@ defmodule PolisWeb.StationLive do
     if State.tournament(id), do: Station.remove(id)
     {:noreply, load(socket)}
   end
+
+  # --- the access PIN (the machine itself only) ------------------------------------------
+
+  def handle_event(
+        "pin_save",
+        %{"pin" => %{"value" => value}},
+        %{assigns: %{pin_local?: true}} = socket
+      ) do
+    case Polis.AccessPin.change(value) do
+      :ok ->
+        {:noreply,
+         socket
+         |> put_flash(:info, pin_changed())
+         |> assign(
+           pin_form: to_form(%{"value" => ""}, as: :pin),
+           pin_error: nil,
+           pin: Polis.AccessPin.current()
+         )}
+
+      {:error, reason} ->
+        {:noreply,
+         assign(socket,
+           pin_form: to_form(%{"value" => value}, as: :pin),
+           pin_error: Polis.AccessPin.reason_text(reason)
+         )}
+    end
+  end
+
+  def handle_event("pin_new", _params, %{assigns: %{pin_local?: true}} = socket) do
+    Polis.AccessPin.renew()
+
+    {:noreply,
+     socket
+     |> put_flash(:info, pin_changed())
+     |> assign(
+       pin_form: to_form(%{"value" => ""}, as: :pin),
+       pin_error: nil,
+       pin: Polis.AccessPin.current()
+     )}
+  end
+
+  def handle_event("pin_" <> _other, _params, socket), do: {:noreply, socket}
 
   # --- per tournament -------------------------------------------------------------------
 
@@ -289,6 +334,12 @@ defmodule PolisWeb.StationLive do
          checking?: false,
          update_message: {:error, gettext("Could not reach the release page.")}
        )}
+
+  defp pin_for(%{assigns: %{pin_local?: true}}), do: Polis.AccessPin.current()
+  defp pin_for(_remote), do: nil
+
+  defp pin_changed,
+    do: gettext("PIN changed; every other browser has to give the new one.")
 
   defp list_printers do
     case Printer.printers() do
@@ -745,6 +796,51 @@ defmodule PolisWeb.StationLive do
             </span>
           </li>
         </ul>
+      </section>
+
+      <section :if={@pin_local?} id="access-pin">
+        <h2>{gettext("Access PIN")}</h2>
+
+        <p>
+          <span id="access-pin-current" class="mono">{@pin}</span>
+        </p>
+
+        <p class="note">
+          {gettext(
+            "Other machines are asked for this PIN when they open the station over the hall's network. This machine never is."
+          )}
+        </p>
+
+        <p :if={@pin_error} id="access-pin-error" class="error" role="alert">{@pin_error}</p>
+
+        <.form for={@pin_form} id="access-pin-form" phx-submit="pin_save">
+          <input
+            id="access-pin-input"
+            name={@pin_form[:value].name}
+            value={@pin_form[:value].value}
+            type="password"
+            maxlength="64"
+            autocomplete="off"
+            aria-label={gettext("New PIN")}
+            placeholder={gettext("New PIN")}
+          />
+          <button
+            id="access-pin-show"
+            type="button"
+            class="quiet"
+            phx-click={
+              Phoenix.LiveView.JS.toggle_attribute({"type", "password", "text"},
+                to: "#access-pin-input"
+              )
+            }
+          >
+            {gettext("Show")}
+          </button>
+          <button id="access-pin-save" type="submit">{gettext("Save")}</button>
+          <button id="access-pin-new" type="button" class="quiet" phx-click="pin_new">
+            {gettext("New random PIN")}
+          </button>
+        </.form>
       </section>
 
       <section id="program">

@@ -40,9 +40,24 @@ defmodule Polis.StationCase do
     File.rm_rf!(data)
     File.mkdir_p!(data)
 
+    # The folder was emptied, the PIN with it: made again, as at a start.
+    Polis.AccessPin.forget()
+    Polis.AccessPin.boot()
+    Polis.AccessPin.Throttle.reset()
+
     {:ok, _} = Supervisor.restart_child(Polis.Supervisor, Polis.State)
     {:ok, _} = Supervisor.restart_child(Polis.Supervisor, Polis.Queue)
     :ok
+  end
+
+  @doc "A request from this machine itself: never asked for the PIN."
+  def local_conn do
+    Phoenix.ConnTest.build_conn() |> Map.put(:host, "localhost")
+  end
+
+  @doc "A request from another machine on the hall network, to the host the test connections use."
+  def remote_conn(ip \\ {192, 168, 1, 50}) do
+    Phoenix.ConnTest.build_conn() |> Map.put(:remote_ip, ip)
   end
 
   @doc "Waits, up to `timeout` ms, for `fun` to return something truthy; returns it."
