@@ -52,7 +52,7 @@ jobs:
   # targets to build. The release job reads the answer from here.
   plan:
     name: Plan
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     permissions:
       contents: read
     outputs:
@@ -129,6 +129,8 @@ jobs:
           MAC_ONLY: ${{ inputs.mac_only }}
         run: |
           set -euo pipefail
+          # linux_x86_64 stays on the GitHub-hosted ubuntu-22.04 runner: the release
+          # binary keeps its older glibc baseline. ubuntu-24.04-arm is ARM (the VM is x64).
           base='[
             {"runner":"ubuntu-22.04","target":"linux-x86_64"},
             {"runner":"ubuntu-22.04-arm","target":"linux-aarch64"},
@@ -723,7 +725,7 @@ jobs:
     name: Publish the release
     needs: [plan, build]
     if: (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') && !inputs.mac_only
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, teapot-vm]
     permissions:
       contents: write
       # Keyless attestation: the OIDC token and the right to store the result.
