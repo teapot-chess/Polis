@@ -55,8 +55,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0-ex1.20-
 
       # --check-locked: a constraint edited in mix.exs without the lock file
       # would otherwise be resolved here, silently, into a set of
@@ -114,8 +114,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-otp29.0.5-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-otp29.0.5-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0.5-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-otp29.0.5-ex1.20-
 
       - run: mix deps.get --check-locked
 
@@ -174,8 +174,8 @@ jobs:
           path: |
             openpairings/deps
             openpairings/_build
-          key: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
 
       # OpenPairings pulls Ainalrami from its private twin, which this job's
       # GITHUB_TOKEN cannot read; every github.com fetch goes through
@@ -226,8 +226,8 @@ jobs:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-mix-contracts-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-contracts-otp29.0-ex1.20-
+          key: ${{ runner.environment }}-${{ runner.os }}-mix-contracts-otp29.0-ex1.20-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-contracts-otp29.0-ex1.20-
 
       - run: mix deps.get --check-locked
 
