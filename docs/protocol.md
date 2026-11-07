@@ -2,8 +2,8 @@
 
 The wire format is not described here any more. It is OpenPairings'
 contract **hall-link-v1**:
-[priv/contracts/hall-link-v1](https://github.com/teapot-chess/openpairings/tree/main/priv/contracts/hall-link-v1)
-in the OpenPairings repository - JSON Schemas for the join, every frame
+[priv/contracts/vendor/openpairings/hall-link-v1](../priv/contracts/vendor/openpairings/hall-link-v1)
+in this repository - JSON Schemas for the join, every frame
 both ways and the pairing links, with examples and a README that says how
 the line runs and how a device is paired. Polis vendors a byte-for-byte
 copy in `priv/contracts/vendor/openpairings/hall-link-v1/`

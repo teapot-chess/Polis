@@ -1,7 +1,7 @@
 # Polis
 
 The print station of a chess hall. A small program on a computer with a
-printer: it joins a tournament in [OpenPairings](https://github.com/teapot-chess/OpenPairings)
+printer: it joins a tournament in [OpenPairings](https://pairings.cloud)
 with a join link, keeps a line open to it, and prints the pairings list and
 the place cards of every round the arbiter publishes - once, on its own,
 and again only when somebody asks. On request it also prints the standings, an
