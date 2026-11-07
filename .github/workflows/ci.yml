@@ -35,7 +35,7 @@ jobs:
     if: github.event_name != 'schedule'
     # Named, not `ubuntu-latest`: that label moves, and it should move here
     # when somebody decides it does.
-    runs-on: [self-hosted, Linux, X64, teapot-vm]
+    runs-on: ubuntu-24.04
 
     steps:
       # Actions are pinned to a commit, not to a tag: a tag can be moved, and
@@ -140,7 +140,7 @@ jobs:
   plugin:
     name: OpenPairings plugin tests (hosted edition)
     if: github.event_name != 'schedule'
-    runs-on: [self-hosted, Linux, X64, teapot-vm]
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
       # The hosted edition, with this repository's plugins and no others.
@@ -159,8 +159,7 @@ jobs:
       # server that will run it, not against the one it was written for.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: teapot-chess/openpairings-internal
-          token: ${{ secrets.CONTRACTS_TOKEN }}
+          repository: teapot-chess/openpairings
           ref: main
           path: openpairings
 
@@ -176,20 +175,6 @@ jobs:
             openpairings/_build
           key: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-${{ hashFiles('openpairings/mix.lock') }}
           restore-keys: ${{ runner.environment }}-${{ runner.os }}-mix-plugin-otp29.0-ex1.20-
-
-      # OpenPairings pulls Ainalrami from its private twin, which this job's
-      # GITHUB_TOKEN cannot read; every github.com fetch goes through
-      # CONTRACTS_TOKEN instead, as in OpenPairings' own CI.
-      - name: Read the private Ainalrami twin
-        shell: bash
-        # Env, not `git config --global`: the runners share one home directory, and
-        # a post-job hook wipes ~/.gitconfig under whichever job is still running.
-        run: |
-          {
-            echo "GIT_CONFIG_COUNT=1"
-            echo "GIT_CONFIG_KEY_0=url.https://x-access-token:${{ secrets.CONTRACTS_TOKEN }}@github.com/.insteadOf"
-            echo "GIT_CONFIG_VALUE_0=https://github.com/"
-          } >> "$GITHUB_ENV"
 
       - name: Install OpenPairings' dependencies
         working-directory: openpairings
@@ -209,7 +194,7 @@ jobs:
 
   contracts:
     name: Contracts match their providers
-    runs-on: [self-hosted, Linux, X64, teapot-vm]
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
 
@@ -237,5 +222,3 @@ jobs:
       # they then say.
       - name: Compare the vendored contract with OpenPairings'
         run: mix contracts.check
-        env:
-          CONTRACTS_TOKEN: ${{ secrets.CONTRACTS_TOKEN }}

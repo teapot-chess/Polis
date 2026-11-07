@@ -29,15 +29,19 @@ name: Build and release
 # some fifty releases this way; where it differs, the comment says why.
 
 on:
-  push:
-    branches: ["main"]
-    tags: ["v*"]
   workflow_dispatch:
     inputs:
       mac_only:
         description: "Build, sign and notarise only the Mac apps; publish nothing (for testing the signing)"
         type: boolean
         default: false
+
+# Off until December 2026 - restore these triggers to re-enable:
+# on:
+#   push:
+#     branches: ["main"]
+#     tags: ["v*"]
+#   workflow_dispatch:
 
 concurrency:
   group: release-${{ github.ref }}
@@ -52,7 +56,7 @@ jobs:
   # targets to build. The release job reads the answer from here.
   plan:
     name: Plan
-    runs-on: [self-hosted, Linux, X64, teapot-vm]
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     outputs:
@@ -725,7 +729,7 @@ jobs:
     name: Publish the release
     needs: [plan, build]
     if: (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') && !inputs.mac_only
-    runs-on: [self-hosted, Linux, X64, teapot-vm]
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       # Keyless attestation: the OIDC token and the right to store the result.
