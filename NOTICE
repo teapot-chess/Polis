@@ -1,8 +1,5 @@
 Polis
-Copyright 2026 Jorian Burssens. Licensed under the Functional Source License,
-Version 1.1, Apache 2.0 Future License (FSL-1.1-ALv2); see LICENSE. Each
-version becomes available under the Apache License, Version 2.0 two years
-after it is released.
+Source published for reference under the Microsoft Reference Source License (Ms-RSL), copyright 2026 Jorian Burssens. The builds we publish (downloads, app stores, the Alnasl Pi image) may be used free of charge to run chess events; that permission covers our builds, not builds you make yourself.
 
 It includes the following, which keep their own notices:
 

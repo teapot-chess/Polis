@@ -5,7 +5,7 @@ defmodule Polis.MixProject do
     [
       app: :polis,
       version: "0.6.0",
-      package: [licenses: ["FSL-1.1-ALv2"]],
+      package: [licenses: ["LicenseRef-Ms-RSL"]],
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
