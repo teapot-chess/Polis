@@ -107,7 +107,14 @@ defmodule Mix.Tasks.Contracts.Sync do
     end
   end
 
-  defp headers(_contract), do: []
+  # openpairings is private, so a token in the environment is sent to every provider;
+  # without one the request goes out bare and GitHub answers 404 for a private one.
+  defp headers(_contract) do
+    case System.get_env("CONTRACTS_TOKEN") do
+      token when is_binary(token) and token != "" -> [authorization: "token " <> token]
+      _ -> []
+    end
+  end
 
   defp get!(url, headers) do
     # `decode_body: false`: the bytes, not Req's idea of the JSON in them.
