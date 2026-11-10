@@ -24,8 +24,18 @@ defmodule Polis.JoinTest do
     assert attrs["name"] == "Club Open"
     assert FakeServer.get(server, :identity) == @identity
   end
+
   test "plain http is accepted for this machine and private hosts, refused elsewhere" do
-    for host <- ["127.0.0.1", "10.1.2.3", "172.20.0.1", "192.168.1.5", "100.64.0.9", "[::1]", "hall.local", "localhost"] do
+    for host <- [
+          "127.0.0.1",
+          "10.1.2.3",
+          "172.20.0.1",
+          "192.168.1.5",
+          "100.64.0.9",
+          "[::1]",
+          "hall.local",
+          "localhost"
+        ] do
       assert {:ok, _} = Join.parse("http://#{host}/p/polis/join/K7Q-4MD"), host
     end
 

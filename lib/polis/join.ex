@@ -107,7 +107,12 @@ defmodule Polis.Join do
   Anywhere else the key would cross the open internet in clear.
   """
   def private_host?(host) when is_binary(host) do
-    host = host |> String.trim("[") |> String.trim("]") |> String.trim_trailing(".") |> String.downcase()
+    host =
+      host
+      |> String.trim("[")
+      |> String.trim("]")
+      |> String.trim_trailing(".")
+      |> String.downcase()
 
     case :inet.parse_address(String.to_charlist(host)) do
       {:ok, {127, _, _, _}} -> true
