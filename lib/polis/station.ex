@@ -133,13 +133,25 @@ defmodule Polis.Station do
             if new?, do: put_in(t, ["printed", key], rev), else: t
           end)
 
-        if new?, do: enqueue_round(t, payload, [:pairings, :placecards, :playerlist, :slips])
+        printed? = new? and enqueue_or_forget(id, key, t, payload)
         broadcast_links()
-        if new?, do: :printing, else: :kept
+        if printed?, do: :printing, else: :kept
     end
   end
 
   def round_received(_id, _payload), do: :ignored
+
+  # The round counts as handled once its jobs exist. If the queue is not
+  # there to take them, the mark comes off again, so that the server's next
+  # send of the round is a new round to this station, not "kept".
+  defp enqueue_or_forget(id, key, t, payload) do
+    enqueue_round(t, payload, [:pairings, :placecards, :playerlist, :slips])
+    true
+  catch
+    :exit, _reason ->
+      State.update_tournament(id, fn t -> Map.update(t, "printed", %{}, &Map.delete(&1, key)) end)
+      false
+  end
 
   @doc """
   A `print` from the server: `what` is pairings, placecards, both,

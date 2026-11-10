@@ -95,7 +95,9 @@ button and the PDF. "Test print" prints a frame along the margins.
 There is always an access PIN, made at the first start and kept in
 `<data>/access-pin`. The station's own page shows it (under "Access PIN"), and
 changes it or makes a random one; it cannot be removed. This machine is never
-asked for it. `POLIS_LISTEN=lan` opens the page to the hall's network, and
+asked for it. A box without a screen (the Linux installer with `--lan`) prints
+the PIN when the installer is done, and `sudo cat /var/lib/polis/access-pin`
+shows it whenever you need it. `POLIS_LISTEN=lan` opens the page to the hall's network, and
 every other machine is then asked for the PIN before any page or PDF; the
 default is this machine only, where nobody is asked. Wrong guesses make an
 address wait, longer each time. A box that runs Polis can leave a

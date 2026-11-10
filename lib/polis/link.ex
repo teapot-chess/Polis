@@ -56,21 +56,25 @@ defmodule Polis.Link do
     end
   end
 
-  @doc "`%{up?, error}` of a tournament's line."
+  @doc """
+  `%{up?, error}` of a tournament's line. Read from the registry, where the
+  line writes it when it changes, and not asked of the line itself: a line
+  in the middle of a ten-second connect to a server that does not answer
+  could not answer, and the page, which asks every two seconds, waited five
+  for it every time.
+  """
   def info(id) do
-    case whereis(id) do
-      nil -> %{up?: false, error: nil}
-      pid -> GenServer.call(pid, :info)
+    case Registry.lookup(Polis.LinkRegistry, id) do
+      [{_pid, %{up?: _, error: _} = info}] -> info
+      _none_or_starting -> %{up?: false, error: nil}
     end
-  catch
-    :exit, _reason -> %{up?: false, error: nil}
   end
 
   @doc "Tells the server this station is leaving the tournament, if the line is up."
   def leave(id) do
     case whereis(id) do
       nil -> :ok
-      pid -> GenServer.call(pid, :leave)
+      pid -> GenServer.call(pid, :leave, 1_000)
     end
   catch
     :exit, _reason -> :ok
@@ -84,7 +88,7 @@ defmodule Polis.Link do
   def send_settings(id, fields) do
     case whereis(id) do
       nil -> {:error, :down}
-      pid -> GenServer.call(pid, {:settings, fields})
+      pid -> GenServer.call(pid, {:settings, fields}, 1_000)
     end
   catch
     :exit, _reason -> {:error, :down}
@@ -95,7 +99,7 @@ defmodule Polis.Link do
   @impl true
   def init(opts) do
     id = Keyword.fetch!(opts, :tournament)
-    {:ok, _} = Registry.register(Polis.LinkRegistry, id, nil)
+    {:ok, _} = Registry.register(Polis.LinkRegistry, id, %{up?: false, error: nil})
     Phoenix.PubSub.subscribe(Polis.PubSub, Polis.Station.status_topic())
     send(self(), :connect)
 
@@ -111,6 +115,7 @@ defmodule Polis.Link do
        error: nil,
        backoff: 1_000,
        heard: now(),
+       ping: nil,
        sent_status: nil
      }}
   end
@@ -147,16 +152,18 @@ defmodule Polis.Link do
 
   def handle_info(:status_changed, state), do: {:noreply, state}
 
-  def handle_info(:ping, %{up?: true} = state) do
+  # One chain of pings at a time: the token says which chain a tick belongs
+  # to, so a tick from a line that has since dropped and come back is not a
+  # second chain (they used to multiply with every reconnect).
+  def handle_info({:ping, token}, %{up?: true, ping: token} = state) do
     if now() - state.heard > @dead_ms do
       {:noreply, lost(state, :silent)}
     else
-      Process.send_after(self(), :ping, @ping_ms)
-      {:noreply, send_frame(state, {:ping, ""})}
+      {:noreply, state |> schedule_ping() |> send_frame({:ping, ""})}
     end
   end
 
-  def handle_info(:ping, state), do: {:noreply, state}
+  def handle_info({:ping, _stale}, state), do: {:noreply, state}
 
   def handle_info(:stop, state), do: {:stop, :normal, state}
 
@@ -271,13 +278,14 @@ defmodule Polis.Link do
   # --- the conversation -------------------------------------------------------------
 
   defp message(%{"type" => "welcome"} = frame, state) do
-    Process.send_after(self(), :ping, @ping_ms)
+    state = schedule_ping(state)
 
     with %{"id" => _, "name" => name} when is_binary(name) <- frame["tournament"] do
       State.update_tournament(state.id, &Map.put(&1, "name", name))
     end
 
     %{state | up?: true, error: nil, backoff: 1_000, sent_status: nil}
+    |> publish()
     |> send_status()
     |> tap(fn _ -> Polis.Station.broadcast_links() end)
   end
@@ -351,8 +359,23 @@ defmodule Polis.Link do
   defp close(state) do
     if state.conn, do: Mint.HTTP.close(state.conn)
     was_up? = state.up?
-    state = %{state | conn: nil, websocket: nil, ref: nil, up?: false}
+    state = %{state | conn: nil, websocket: nil, ref: nil, up?: false, ping: nil}
     if was_up?, do: Polis.Station.broadcast_links()
+    publish(state)
+  end
+
+  defp schedule_ping(state) do
+    token = make_ref()
+    Process.send_after(self(), {:ping, token}, @ping_ms)
+    %{state | ping: token}
+  end
+
+  # What `info/1` reads without asking.
+  defp publish(state) do
+    Registry.update_value(Polis.LinkRegistry, state.id, fn _old ->
+      %{up?: state.up?, error: state.error}
+    end)
+
     state
   end
 
@@ -370,7 +393,7 @@ defmodule Polis.Link do
     next =
       if state.backoff >= @refused_ms, do: 1_000, else: min(state.backoff * 2, @max_backoff_ms)
 
-    %{state | error: error, backoff: next}
+    %{state | error: error, backoff: next} |> publish()
   end
 
   defp describe(%{reason: reason}), do: describe(reason)

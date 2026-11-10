@@ -16,6 +16,12 @@ defmodule PolisWeb.UnlockHTML do
           {gettext("This station asks for its PIN. It is shown on the station's own screen.")}
         </p>
 
+        <p id="unlock-headless" class="note">
+          {gettext(
+            "On a box without a screen it is in the file access-pin in Polis's data folder (on Linux: sudo cat /var/lib/polis/access-pin)."
+          )}
+        </p>
+
         <p :if={@error} id="unlock-error" class="error" role="alert">{@error}</p>
         <p :if={@wait > 0} id="unlock-wait" class="error" role="alert">
           {ngettext("Wait %{count} second.", "Wait %{count} seconds.", @wait)}

@@ -143,7 +143,13 @@ main() {
     # before anything else: the path unit starts this again for as long as
     # the file is there.
     if [ "$requested" = 1 ]; then
-        wanted=$(head -c 32 "$REQUEST_FILE" 2>/dev/null | tr -d ' \t\r\n' || true)
+        # A regular file or nothing: a FIFO would hold this unit until its
+        # timeout, and a symlink would read wherever it points.
+        if [ -f "$REQUEST_FILE" ] && [ ! -L "$REQUEST_FILE" ]; then
+            wanted=$(head -c 32 "$REQUEST_FILE" 2>/dev/null | tr -d ' \t\r\n' || true)
+        else
+            wanted=""
+        fi
         rm -f "$REQUEST_FILE"
         is_version "$wanted" || fail "?" "the request did not name a version"
     fi
@@ -218,13 +224,21 @@ main() {
         # The state file as the old version left it, before the new one makes
         # of it what it will. A few kilobytes, and kept: nothing here tidies
         # up after the arbiter's data.
-        if [ -f "$DATA_DIR/state.json" ]; then
-            keep="$DATA_DIR/backups/before-$new-$(date -u +%Y%m%dT%H%M%SZ)"
-            mkdir -p "$keep"
-            cp -p "$DATA_DIR"/state.json "$keep"/ 2>/dev/null || true
-            owner=$(stat -c '%U:%G' "$DATA_DIR")
-            chown -R "$owner" "$DATA_DIR/backups"
-            say "the state file as it was is in $keep"
+        #
+        # This runs as root inside a folder the service user owns, so it
+        # follows no symlink there: a state.json or a backups that is one
+        # is skipped (with a word), not copied from or into.
+        if [ -f "$DATA_DIR/state.json" ] && [ ! -L "$DATA_DIR/state.json" ]; then
+            if [ -L "$DATA_DIR/backups" ] || { [ -e "$DATA_DIR/backups" ] && [ ! -d "$DATA_DIR/backups" ]; }; then
+                say "$DATA_DIR/backups is not a plain folder; the state file is not copied."
+            else
+                keep="$DATA_DIR/backups/before-$new-$(date -u +%Y%m%dT%H%M%SZ)"
+                mkdir -p "$keep"
+                cp -p --no-dereference "$DATA_DIR"/state.json "$keep"/ 2>/dev/null || true
+                owner=$(stat -c '%U:%G' "$DATA_DIR")
+                chown -R -h "$owner" "$DATA_DIR/backups"
+                say "the state file as it was is in $keep"
+            fi
         fi
     fi
 

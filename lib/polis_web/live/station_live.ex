@@ -279,7 +279,7 @@ defmodule PolisWeb.StationLive do
   def handle_event("autostart", params, socket) do
     case Autostart.set(params["on"] == "true") do
       :ok ->
-        {:noreply, load(socket)}
+        {:noreply, socket |> assign(autostart?: read_autostart()) |> load()}
 
       {:error, _words} ->
         {:noreply,
@@ -440,10 +440,22 @@ defmodule PolisWeb.StationLive do
       notice: Updates.notice(),
       install_kind: Updates.install_kind(),
       update_mode: Updates.mode(),
-      last_update: Updates.last_result(),
-      autostart?: Autostart.supported?() and Autostart.enabled?()
+      last_update: Updates.last_result()
     )
+    |> load_autostart()
   end
+
+  # Asked of the registry once (a `reg.exe` process each time), not on every
+  # refresh: at the first load, and after the switch has been used.
+  defp load_autostart(socket) do
+    if Map.has_key?(socket.assigns, :autostart?) do
+      socket
+    else
+      assign(socket, autostart?: read_autostart())
+    end
+  end
+
+  defp read_autostart, do: Autostart.supported?() and Autostart.enabled?()
 
   defp safe(fun, default) do
     fun.()

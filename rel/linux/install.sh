@@ -10,8 +10,9 @@
 #
 # Options (after `sh -s --` when piped):
 #   --lan             let other machines in the hall reach the page (a box
-#                     without a screen). There is no PIN in this version:
-#                     anybody on the hall's network can then use it.
+#                     without a screen). They are asked for the access PIN,
+#                     which this script prints when it is done and which
+#                     stays in /var/lib/polis/access-pin.
 #   --version X.Y.Z   that release instead of the latest
 #
 # What it does, and nothing more:
@@ -137,7 +138,8 @@ main() {
             echo "PORT=4061"
             echo ""
             echo "# Who may open the page: only this box (the default), or the hall's"
-            echo "# network with POLIS_LISTEN=lan. There is no PIN in this version."
+            echo "# network with POLIS_LISTEN=lan, which then asks for the PIN:"
+            echo "#   sudo cat $DATA_DIR/access-pin"
             if [ "$lan" = 1 ]; then
                 echo "POLIS_LISTEN=lan"
             else
@@ -162,10 +164,29 @@ main() {
     say "  The site:    http://localhost:4061 on this box"
     if [ "$lan" = 1 ]; then
         say "               and http://<this box's address>:4061 from the hall's network."
-        say "               There is no PIN: anybody on that network can use the page."
+        say "               Those computers are asked for the access PIN (see below)."
     else
         say "               (POLIS_LISTEN=lan in $CONF_DIR/polis.env opens it to the hall's network.)"
     fi
+    # There is always a PIN, and a box without a screen has nowhere to show
+    # it but here: Polis makes it when it starts, so give it a moment.
+    pin=""
+    waited=0
+    while [ "$waited" -lt 20 ]; do
+        if [ -r "$DATA_DIR/access-pin" ]; then
+            pin=$(head -n 1 "$DATA_DIR/access-pin" | sed 's/[[:space:]]*$//')
+            [ -n "$pin" ] && break
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+    if [ -n "$pin" ]; then
+        say "  Access PIN:  $pin"
+    else
+        say "  Access PIN:  not made yet; once Polis has started: sudo cat $DATA_DIR/access-pin"
+    fi
+    say "               Kept in $DATA_DIR/access-pin; change it on the station's page,"
+    say "               or before a start with a pin-request file (README)."
     say "  The data:    $DATA_DIR"
     say "  The program: $INSTALL_DIR"
     say "  Its log:     journalctl -u polis"
