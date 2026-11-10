@@ -360,6 +360,22 @@ defmodule Polis.Layout do
           ]
       end
 
+    # A round with nobody seated (all byes, or no boards) is a sheet saying
+    # so, as the pairings and the slips are, not a document with no pages.
+    pages =
+      case pages do
+        [] ->
+          [
+            [
+              {:text, w / 2, h / 2, :regular, 11, gettext("No boards in this round."),
+               [align: :center]}
+            ]
+          ]
+
+        pages ->
+          pages
+      end
+
     %{
       paper: paper,
       width: w,

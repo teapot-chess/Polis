@@ -31,7 +31,7 @@ config :polis, PolisWeb.Endpoint,
 
 # What never goes into a log, at any level: the join link carries a code,
 # and the code is as good as a key for fifteen minutes.
-config :phoenix, :filter_parameters, ["link", "key", "code", "token", "secret"]
+config :phoenix, :filter_parameters, ["link", "key", "code", "token", "secret", "pin"]
 
 config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",

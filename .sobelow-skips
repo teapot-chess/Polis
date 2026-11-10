@@ -2,46 +2,46 @@ Config.CSP: Missing Content-Security-Policy,lib/polis_web/router.ex:11,48489F1
 Config.CSWH: Cross-Site Websocket Hijacking,lib/polis_web/endpoint.ex:10,4D97CEA
 Config.CSWH: Cross-Site Websocket Hijacking,lib/polis_web/endpoint.ex:33,3BBB530
 Config.HTTPS: HTTPS Not Enabled,config/prod.exs:0,2B5C077
+Traversal.FileModule: Directory Traversal in `File.chmod`,lib/polis/access_pin.ex:245,5E9D2D7
 Traversal.FileModule: Directory Traversal in `File.chmod`,lib/polis/launcher_details.ex:155,66A8AC5
 Traversal.FileModule: Directory Traversal in `File.chmod`,lib/polis/launcher_details.ex:160,5F64B8
 Traversal.FileModule: Directory Traversal in `File.chmod`,lib/polis/state.ex:220,6B0A252
 Traversal.FileModule: Directory Traversal in `File.cp!`,lib/polis/printer/dry_run.ex:30,6473A24
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/access_pin.ex:232,691CCD5
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/access_pin/boot.ex:14,589A3BC
 Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/paths.ex:14,3C9F75B
 Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/printer/dry_run.ex:28,5EB24CD
 Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/state.ex:217,616B316
 Traversal.FileModule: Directory Traversal in `File.mkdir_p`,lib/polis/launcher_details.ex:154,7C3CB11
 Traversal.FileModule: Directory Traversal in `File.mkdir_p`,lib/polis/updates.ex:366,30487BF
+Traversal.FileModule: Directory Traversal in `File.open`,lib/polis/access_pin.ex:246,31D6706
 Traversal.FileModule: Directory Traversal in `File.open`,lib/polis/launcher_details/cli.ex:223,4C190BE
 Traversal.FileModule: Directory Traversal in `File.open`,lib/polis/state.ex:221,663A4AF
+Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/access_pin.ex:211,5DAB011
+Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/access_pin.ex:280,4032A7E
 Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/launcher_details/cli.ex:265,4124EAB
+Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/queue.ex:376,5903BDF
+Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/queue.ex:431,4CE44
 Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/state.ex:197,58F82C9
 Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/updates.ex:387,44BA052
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:121,4CA188F
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:237,23F5D71
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:240,61F2E18
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:287,74D0D79
+Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/access_pin.ex:281,77DCE43
 Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/launcher_details.ex:130,6925233
 Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/printer/windows.ex:56,7C18C55
+Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/queue.ex:328,38C05F9
+Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/queue.ex:329,2FF3ACF
 Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/printer/dry_run.ex:32,536C346
 Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/printer/windows.ex:45,277ECEF
+Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/queue.ex:348,2CDC69A
+Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/access_pin.ex:244,DCDECD
 Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/launcher_details.ex:159,307A8D8
 Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/launcher_details.ex:161,3FA1D1
+Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/queue.ex:260,5FAF231
 Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/state.ex:219,7D5CBDB
 Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/updates.ex:367,3057F96
 Traversal.SendFile: Directory Traversal in `send_file`,lib/polis_web/controllers/job_controller.ex:16,64D3D8B
 XSS.Raw: XSS,lib/polis_web/components.ex:11,46D3240
 XSS.SendResp: XSS in `send_resp`,lib/polis_web/endpoint.ex:49,43EDD1
-Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/queue.ex:352,61ACD79
-Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/queue.ex:407,3C926D8
-Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/queue.ex:304,3C049C5
-Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/queue.ex:305,6571389
-Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/queue.ex:131,266670
-Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/queue.ex:163,6E60CB5
-Traversal.FileModule: Directory Traversal in `File.write!`,lib/polis/queue.ex:324,6FFE099
-Traversal.FileModule: Directory Traversal in `File.chmod`,lib/polis/access_pin.ex:215,3432EB8
-Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/access_pin.ex:202,28E4B5
-Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/polis/access_pin/boot.ex:14,589A3BC
-Traversal.FileModule: Directory Traversal in `File.open`,lib/polis/access_pin.ex:216,36C19B3
-Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/access_pin.ex:185,545AA1
-Traversal.FileModule: Directory Traversal in `File.read`,lib/polis/access_pin.ex:250,1385DFF
-Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:207,6416B98
-Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:210,27FD149
-Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/polis/access_pin.ex:257,7137F76
-Traversal.FileModule: Directory Traversal in `File.rm`,lib/polis/access_pin.ex:251,6746DDB
-Traversal.FileModule: Directory Traversal in `File.write`,lib/polis/access_pin.ex:214,226D179

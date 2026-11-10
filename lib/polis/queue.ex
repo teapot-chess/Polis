@@ -128,11 +128,6 @@ defmodule Polis.Queue do
   def handle_call({:enqueue, attrs}, _from, state) do
     id = new_id()
 
-    File.write!(
-      source_file(id),
-      Jason.encode!(%{"what" => attrs.what, "payload" => attrs.payload})
-    )
-
     job = %{
       id: id,
       tournament: attrs.tournament,
@@ -147,8 +142,15 @@ defmodule Polis.Queue do
       printed_at: nil
     }
 
-    # Laid out now, so that "Open PDF" has something at once.
-    write_pdf(job, Station.paper(), Station.printer())
+    # Laid out now, so that "Open PDF" has something at once. A payload this
+    # cannot lay out, or a disk that cannot take the files, makes a job that
+    # says so in the list - not a crash that takes the queue, the page and
+    # the round with it.
+    job =
+      case prepare(job, %{"what" => attrs.what, "payload" => attrs.payload}) do
+        :ok -> job
+        {:error, words} -> %{job | status: :failed, error: words}
+      end
 
     state = %{state | jobs: [job | state.jobs]} |> prune() |> changed()
     {:reply, id, advance(state)}
@@ -160,7 +162,6 @@ defmodule Polis.Queue do
     with %{} = old <- Enum.find(state.jobs, &(&1.id == id)),
          {:ok, source} <- read_source(id) do
       new = new_id()
-      File.write!(source_file(new), Jason.encode!(source))
 
       job = %{
         old
@@ -171,7 +172,12 @@ defmodule Polis.Queue do
           printed_at: nil
       }
 
-      write_pdf(job, Station.paper(), Station.printer())
+      job =
+        case prepare(job, source) do
+          :ok -> job
+          {:error, words} -> %{job | status: :failed, error: words}
+        end
+
       state = %{state | jobs: [job | state.jobs]} |> prune() |> changed()
       {:reply, {:ok, new}, advance(state)}
     else
@@ -249,6 +255,21 @@ defmodule Polis.Queue do
 
   defp advance(state), do: state
 
+  # The job's source on disk and its PDF, or why not.
+  defp prepare(job, source) do
+    with :ok <- File.write(source_file(job.id), Jason.encode!(source)),
+         {:ok, _doc} <- write_pdf(job, Station.paper(), Station.printer()) do
+      :ok
+    else
+      :error -> {:error, "the sheet could not be laid out"}
+      {:error, reason} -> {:error, "could not write the job: #{inspect(reason)}"}
+    end
+  rescue
+    error ->
+      Logger.error("polis: job #{job.id} could not be laid out: " <> Exception.message(error))
+      {:error, "the sheet could not be laid out: " <> Exception.message(error)}
+  end
+
   defp print_job(job, paper, printer) do
     case write_pdf(job, paper, printer) do
       {:ok, doc} ->
@@ -294,11 +315,14 @@ defmodule Polis.Queue do
     %{state | jobs: Enum.map(state.jobs, fn job -> if job.id == id, do: fun.(job), else: job end)}
   end
 
-  # The newest fifty; the files of the rest go with them. Never the one
-  # being printed.
+  # The newest fifty; the files of the rest go with them. Never one that
+  # has not been printed yet (with the printer, waiting for it or for a
+  # printer to be chosen): a sheet nobody has seen is not history.
   defp prune(state) do
     {keep, drop} = Enum.split(state.jobs, @keep)
-    {printing, drop} = Enum.split_with(drop, &(&1.status == :printing))
+
+    {printing, drop} =
+      Enum.split_with(drop, &(&1.status in [:printing, :queued, :waiting_printer]))
 
     for job <- drop do
       File.rm(pdf_file(job.id))

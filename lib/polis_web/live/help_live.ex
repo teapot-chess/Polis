@@ -149,7 +149,7 @@ defmodule PolisWeb.HelpLive do
         <section id="help-pin">
           <h2>De pincode</h2>
           <p>
-            Polis heeft altijd een pincode. Hij staat op het eigen scherm van het station, onder "Toegangspincode", en nergens anders. Standaard luistert Polis alleen naar deze computer, en dan vraagt niemand erom. Met
+            Polis heeft altijd een pincode. Hij staat op het eigen scherm van het station, onder "Toegangspincode". Een computer zonder scherm laat hem zien aan het eind van install.sh, en daarna met <span class="mono">sudo cat /var/lib/polis/access-pin</span>. Standaard luistert Polis alleen naar deze computer, en dan vraagt niemand erom. Met
             <span class="mono">POLIS_LISTEN=lan</span>
             kunnen ook andere computers in het netwerk van de zaal de pagina openen; die vragen om de pincode, voor elke pagina en elke pdf.
           </p>
@@ -312,7 +312,7 @@ defmodule PolisWeb.HelpLive do
         <section id="help-pin">
           <h2>The PIN</h2>
           <p>
-            Polis always has a PIN. It is shown on the station's own screen, under "Access PIN", and nowhere else. By default Polis listens to this computer only, and then nobody is asked for it. With
+            Polis always has a PIN. It is shown on the station's own screen, under "Access PIN". A box without a screen shows it at the end of install.sh, and afterwards with <span class="mono">sudo cat /var/lib/polis/access-pin</span>. By default Polis listens to this computer only, and then nobody is asked for it. With
             <span class="mono">POLIS_LISTEN=lan</span>
             other computers on the hall's network can open the page too; those are asked for the PIN, for every page and every PDF.
           </p>

@@ -107,12 +107,38 @@ defmodule Polis.AccessPin do
 
         :none ->
           pin = generate()
-          :ok = write(pin)
+          store_new(pin)
+          pin
+
+        :unusable ->
+          # Somebody's hand-edited file: kept aside, not written over.
+          path = path()
+
+          Logger.warning(
+            "polis: the access PIN file was not usable; kept as #{path}.invalid and a new random PIN made"
+          )
+
+          File.rm_rf(path <> ".invalid")
+          File.rename(path, path <> ".invalid")
+          pin = generate()
+          store_new(pin)
           pin
       end
 
     :persistent_term.put(@key, pin)
     pin
+  end
+
+  # A PIN that cannot be written still holds in memory, with a word in the log,
+  # rather than a station that does not start.
+  defp store_new(pin) do
+    with {:error, reason} <- write(pin) do
+      Logger.warning(
+        "polis: the access PIN could not be written (#{inspect(reason)}); it holds until Polis restarts"
+      )
+    end
+
+    :ok
   end
 
   @doc "Forgets the PIN held in memory (tests)."
@@ -183,14 +209,18 @@ defmodule Polis.AccessPin do
     case File.lstat(path) do
       {:ok, %File.Stat{type: :regular}} ->
         with {:ok, text} <- File.read(path),
-             pin = String.trim_trailing(text, "\n"),
+             # A line ending from a Windows editor is not part of the PIN.
+             pin = text |> String.replace_suffix("\n", "") |> String.replace_suffix("\r", ""),
              :ok <- validate(pin) do
           {:ok, pin}
         else
-          _unusable -> :none
+          _unusable -> :unusable
         end
 
-      _missing_or_not_a_file ->
+      {:error, :enoent} ->
+        :none
+
+      _not_a_file ->
         :none
     end
   end
