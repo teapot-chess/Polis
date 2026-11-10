@@ -143,7 +143,12 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       SIBLINGS_TOKEN: ${{ secrets.SIBLINGS_TOKEN }}
-# OpenPairings pins the PRIVATE teapot-chess/kaus; mix fetches it with      # plain git, so the token goes in a URL rewrite held only in this job's      # environment (the same as OpenPairings' own CI), never on disk.      GIT_CONFIG_COUNT: "1"      GIT_CONFIG_KEY_0: url.https://x-access-token:${{ secrets.SIBLINGS_TOKEN }}@github.com/teapot-chess/kaus.insteadOf      GIT_CONFIG_VALUE_0: https://github.com/teapot-chess/kaus
+      # OpenPairings pins the PRIVATE teapot-chess/kaus; mix fetches it with
+      # plain git, so the token goes in a URL rewrite held only in this job's
+      # environment (the same as OpenPairings' own CI), never on disk.
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: url.https://x-access-token:${{ secrets.SIBLINGS_TOKEN }}@github.com/teapot-chess/kaus.insteadOf
+      GIT_CONFIG_VALUE_0: https://github.com/teapot-chess/kaus
       MIX_ENV: test
       # The hosted edition, with this repository's plugins and no others.
       PAIRINGS_EDITION: hosted
