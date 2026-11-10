@@ -351,6 +351,12 @@ defmodule PolisWeb.StationLive do
   defp join_error(:not_a_link),
     do: gettext("That is not a join link. It looks like https://server/p/polis/join/K7Q-4MD.")
 
+  defp join_error(:plain_http),
+    do:
+      gettext(
+        "That link starts with http:// and points outside this network, so the station's key would travel unencrypted. Use the https:// link."
+      )
+
   defp join_error({:wrong_product, "nunki"}),
     do:
       gettext(

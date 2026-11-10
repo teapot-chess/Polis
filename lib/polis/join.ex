@@ -27,7 +27,7 @@ defmodule Polis.Join do
 
   @doc """
   `{:ok, attrs}` - what `Polis.State.add_tournament/1` takes - or
-  `{:error, reason}`: `:not_a_link`, `{:wrong_product, name}`,
+  `{:error, reason}`: `:not_a_link`, `:plain_http`, `{:wrong_product, name}`,
   `:used_or_expired`, `:version`, `:not_a_server`, `:unreachable`.
   """
   def redeem(link, identity, req_options \\ []) do
@@ -92,6 +92,7 @@ defmodule Polis.Join do
          [_, product, code] <- Regex.run(~r{/p/([a-z0-9_-]+)/join/([^/]+)/?$}, path) do
       cond do
         code == "" -> {:error, :not_a_link}
+        uri.scheme == "http" and not private_host?(host) -> {:error, :plain_http}
         product == Protocol.product() -> {:ok, uri}
         true -> {:error, {:wrong_product, product}}
       end
@@ -99,6 +100,35 @@ defmodule Polis.Join do
       _other -> {:error, :not_a_link}
     end
   end
+
+  @doc """
+  Whether a host may be spoken to over plain http: loopback, a private
+  address (RFC 1918, link-local, 100.64/10, fc00::/7) or a `.local` name.
+  Anywhere else the key would cross the open internet in clear.
+  """
+  def private_host?(host) when is_binary(host) do
+    host =
+      host
+      |> String.trim("[")
+      |> String.trim("]")
+      |> String.trim_trailing(".")
+      |> String.downcase()
+
+    case :inet.parse_address(String.to_charlist(host)) do
+      {:ok, {127, _, _, _}} -> true
+      {:ok, {10, _, _, _}} -> true
+      {:ok, {172, b, _, _}} when b in 16..31 -> true
+      {:ok, {192, 168, _, _}} -> true
+      {:ok, {169, 254, _, _}} -> true
+      {:ok, {100, b, _, _}} when b in 64..127 -> true
+      {:ok, {0, 0, 0, 0, 0, 0, 0, 1}} -> true
+      {:ok, {a, _, _, _, _, _, _, _}} when a in 0xFC00..0xFDFF or a in 0xFE80..0xFEBF -> true
+      {:ok, _public} -> false
+      {:error, _name} -> host == "localhost" or String.ends_with?(host, [".local", ".localhost"])
+    end
+  end
+
+  def private_host?(_host), do: false
 
   @doc """
   What a pairing link means to a print station, as the contract's

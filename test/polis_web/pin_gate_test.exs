@@ -50,6 +50,12 @@ defmodule PolisWeb.PinGateTest do
       end
     end
 
+    test "POLIS_BEHIND_PROXY: nobody is local, a proxy without headers included" do
+      Application.put_env(:polis, :behind_proxy, true)
+      on_exit(fn -> Application.delete_env(:polis, :behind_proxy) end)
+      assert redirected_to(get(local_conn(), "/")) == "/unlock"
+    end
+
     test "loopback to a name that is not this machine's is asked too" do
       conn = Phoenix.ConnTest.build_conn() |> get("/help")
       assert redirected_to(conn) == "/unlock"

@@ -105,7 +105,13 @@ address wait, longer each time. A box that runs Polis can leave a
 station answers only to its own names: `localhost`, `127.0.0.1`, `PHX_HOST`
 and, with `lan`, the machine's host name and addresses. A request that asks
 for any other host (a web page that pointed its own name at this machine, or
-a reverse proxy that forwards one) gets a 403.
+a reverse proxy that forwards one) gets a 403. A reverse proxy on the same
+machine is told apart from the machine's own browser only by the forwarding
+headers it adds; one that adds none (plain nginx with just `proxy_pass`) looks
+local. Start Polis with `POLIS_BEHIND_PROXY=1` then: nothing counts as local,
+every browser is asked for the PIN, and the station page does not show it.
+A join link starting with `http://` is accepted only for this machine, a
+private address or a `.local` name; any other server needs `https://`.
 `POLIS_PRINTER=dry-run` writes every sheet as a PDF into
 `<data>/dry-run/` instead of printing it; development and the tests always
 do that.
