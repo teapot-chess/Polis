@@ -29,6 +29,10 @@ listen = if lan?, do: {0, 0, 0, 0}, else: {127, 0, 0, 1}
 # answers to only when the station was told to listen on the network.
 config :polis, listen: if(lan?, do: :lan, else: :loopback)
 
+# POLIS_BEHIND_PROXY=1 when a reverse proxy runs on this machine: nothing is
+# "this machine's own browser" then, so every request is asked for the PIN.
+config :polis, behind_proxy: System.get_env("POLIS_BEHIND_PROXY") == "1"
+
 if config_env() != :test do
   config :polis, PolisWeb.Endpoint,
     http: [ip: listen, port: String.to_integer(System.get_env("PORT", "4061"))]

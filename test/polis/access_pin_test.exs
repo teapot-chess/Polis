@@ -235,12 +235,33 @@ defmodule Polis.AccessPinTest do
       assert Throttle.peek(@ip, 1_001) == 0
     end
 
-    test "the box takes 40 failures a minute, from any address, then everybody waits" do
+    test "the box takes 40 failures a minute, from any address, then those who failed wait" do
       for n <- 1..40, do: assert(:ok = Throttle.claim({10, 1, 0, n}, 2_000 + div(n, 10)))
-      assert {:wait, wait} = Throttle.claim({10, 2, 0, 1}, 2_005)
+      assert {:wait, wait} = Throttle.claim({10, 1, 0, 1}, 2_005)
       assert wait == 55
       # A minute after the oldest, the door opens.
-      assert :ok = Throttle.claim({10, 2, 0, 1}, 2_061)
+      assert :ok = Throttle.claim({10, 1, 0, 1}, 2_061)
+    end
+
+    test "at the box-wide cap an address that has not failed still gets 2 tries of its own" do
+      for n <- 1..40, do: assert(:ok = Throttle.claim({10, 1, 0, n}, 2_000))
+      fresh = {10, 2, 0, 1}
+      assert Throttle.peek(fresh, 2_005) == 0
+      assert :ok = Throttle.claim(fresh, 2_005)
+      assert :ok = Throttle.claim(fresh, 2_005)
+      assert {:wait, _} = Throttle.claim(fresh, 2_005)
+      # The spare tries do not add to the box-wide count, and an address that
+      # had failed before the cap gets none.
+      assert {:wait, _} = Throttle.claim({10, 1, 0, 3}, 2_005)
+      assert Throttle.peek({10, 1, 0, 3}, 2_005) > 0
+    end
+
+    test "a right PIN gives back its own failure to the box, not another address's" do
+      Throttle.claim({10, 3, 0, 1}, 3_000)
+      for n <- 1..39, do: Throttle.claim({10, 4, 0, n}, 3_001)
+      # 40 on the books; the first address was the oldest and the success is its.
+      Throttle.succeeded({10, 3, 0, 1})
+      assert :ok = Throttle.claim({10, 4, 0, 1}, 3_002)
     end
 
     test "an address quiet for an hour is forgotten" do

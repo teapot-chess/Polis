@@ -6,7 +6,9 @@ defmodule PolisWeb.PinGate do
 
   A request is *local* when it comes from the loopback address, to a name only
   this machine answers to, with no forwarding header on it (a proxy or tunnel
-  on the box also connects from loopback, and says so). The machine's own
+  on the box also connects from loopback, and most say so). A proxy that says
+  nothing cannot be told from the machine's own browser, so `POLIS_BEHIND_PROXY=1`
+  switches "local" off altogether: everybody is asked, the machine included. The machine's own
   browser is never asked, and is the only one that sees the PIN, on the
   station page. When the station listens on loopback only, which is the
   default, every request is local and nobody is ever asked.
@@ -73,8 +75,14 @@ defmodule PolisWeb.PinGate do
   that names only this machine, no forwarding header.
   """
   def local_request?(conn) do
-    loopback?(conn.remote_ip) and own_host?(conn.host) and not forwarded?(conn)
+    not behind_proxy?() and loopback?(conn.remote_ip) and own_host?(conn.host) and
+      not forwarded?(conn)
   end
+
+  # `POLIS_BEHIND_PROXY=1`: a reverse proxy on this machine is in front, and a
+  # proxy that sends no forwarding header (plain nginx) looks exactly like
+  # this machine's own browser. Then nobody is local, and everybody is asked.
+  defp behind_proxy?, do: Application.get_env(:polis, :behind_proxy, false)
 
   defp forwarded?(conn), do: Enum.any?(@forwarding, &(get_req_header(conn, &1) != []))
 

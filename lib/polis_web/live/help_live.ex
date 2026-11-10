@@ -154,7 +154,7 @@ defmodule PolisWeb.HelpLive do
             kunnen ook andere computers in het netwerk van de zaal de pagina openen; die vragen om de pincode, voor elke pagina en elke pdf.
           </p>
           <p>
-            Je kunt hem op het station zelf wijzigen of laten vervangen door een willekeurige van zes cijfers. Een nieuwe pincode geldt meteen: elke andere browser moet de nieuwe invullen. De pincode heeft 6 tot 64 tekens, zonder spatie aan het begin of einde. Weghalen kan niet. Wie vijf keer fout raadt, moet steeds langer wachten.
+            Je kunt hem op het station zelf wijzigen of laten vervangen door een willekeurige van zes cijfers. Een nieuwe pincode geldt meteen: elke andere browser moet de nieuwe invullen. De pincode heeft 6 tot 64 tekens, zonder spatie aan het begin of einde. Weghalen kan niet. Wie vijf keer fout raadt, moet steeds langer wachten. Raadt de hele zaal veertig keer fout in een minuut, dan wacht iedereen die al fout raadde; een computer die nog niet fout raadde krijgt nog twee eigen pogingen. Achter een reverse proxy op dezelfde computer start je Polis met <span class="mono">POLIS_BEHIND_PROXY=1</span>: dan vraagt elke browser erom, ook die van deze computer zelf.
           </p>
         </section>
 
@@ -317,7 +317,7 @@ defmodule PolisWeb.HelpLive do
             other computers on the hall's network can open the page too; those are asked for the PIN, for every page and every PDF.
           </p>
           <p>
-            You can change it on the station itself, or have it replaced by a random one of six digits. A new PIN counts at once: every other browser has to give the new one. A PIN has 6 to 64 characters, with no space at the start or end. It cannot be removed. Whoever guesses wrong five times has to wait longer each time.
+            You can change it on the station itself, or have it replaced by a random one of six digits. A new PIN counts at once: every other browser has to give the new one. A PIN has 6 to 64 characters, with no space at the start or end. It cannot be removed. Whoever guesses wrong five times has to wait longer each time. If the whole hall makes forty wrong guesses in a minute, everybody who has already guessed wrong waits; a computer that has not guessed wrong yet still gets two tries of its own. Behind a reverse proxy on the same computer, start Polis with <span class="mono">POLIS_BEHIND_PROXY=1</span>: then every browser is asked, this computer's own included.
           </p>
         </section>
 
