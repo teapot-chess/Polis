@@ -4,7 +4,7 @@ defmodule Polis.MixProject do
   def project do
     [
       app: :polis,
-      version: "0.6.0",
+      version: "0.6.1",
       package: [licenses: ["LicenseRef-Ms-RSL"]],
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
