@@ -31,6 +31,8 @@ config :polis, listen: if(lan?, do: :lan, else: :loopback)
 
 # POLIS_BEHIND_PROXY=1 when a reverse proxy runs on this machine: nothing is
 # "this machine's own browser" then, so every request is asked for the PIN.
+# The PIN throttle then keys on the last X-Forwarded-For entry, else X-Real-IP
+# (the proxy must set one of them, see the README), else the peer.
 config :polis, behind_proxy: System.get_env("POLIS_BEHIND_PROXY") == "1"
 
 if config_env() != :test do

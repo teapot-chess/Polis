@@ -110,6 +110,10 @@ machine is told apart from the machine's own browser only by the forwarding
 headers it adds; one that adds none (plain nginx with just `proxy_pass`) looks
 local. Start Polis with `POLIS_BEHIND_PROXY=1` then: nothing counts as local,
 every browser is asked for the PIN, and the station page does not show it.
+The wrong-guess throttle then counts the address the proxy reports: the last
+`X-Forwarded-For` entry, else `X-Real-IP`, else the proxy's own. The proxy must
+set `X-Real-IP` or append to `X-Forwarded-For`; one that only passes the
+client's own header through lets clients pick their own throttle bucket.
 A join link starting with `http://` is accepted only for this machine, a
 private address or a `.local` name; any other server needs `https://`.
 `POLIS_PRINTER=dry-run` writes every sheet as a PDF into
