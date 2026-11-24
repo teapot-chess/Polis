@@ -15,6 +15,11 @@
     },
     "round": {
       "$ref": "common.schema.json#/definitions/round_payload"
+    },
+    "results": {
+      "type": ["string", "null"],
+      "maxLength": 2000,
+      "description": "Optional. Same as `tournament.results` in `welcome`: the tournament's public front page on the results site, or null when it is not public. Sent with every round so that a device that missed the welcome (or a tournament that went public later) catches up."
     }
   }
 }
