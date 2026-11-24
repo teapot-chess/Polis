@@ -73,6 +73,7 @@ defmodule Polis.AccessPin.Throttle do
         fails = old.fails + 1
         until = if fails >= @free, do: now + min(@base * Integer.pow(2, fails - @free), @cap)
         entry = %{fails: fails, last: now, until: until, reserved: old.reserved + 1}
+
         {:reply, :ok,
          %{state | ips: Map.put(state.ips, ip, entry), reserves: [now | state.reserves]}}
 
