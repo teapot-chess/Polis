@@ -10,7 +10,8 @@ defmodule Polis.AccessPin.Throttle do
   failures a minute; past that everybody waits until the oldest of them is a
   minute old - except that an address that has not failed yet still gets 2
   tries of its own, so one phone guessing in a loop cannot keep the arbiter's
-  laptop out of the hall's own station. An address quiet for an hour is
+  laptop out of the hall's own station (those spare tries are capped too: 40 a
+  minute across the box, so a device claiming a whole subnet gains little). An address quiet for an hour is
   forgotten. It is all in memory: a restart forgives.
 
   A guess is counted *before* it is compared (`claim/2`), one at a time
@@ -59,7 +60,7 @@ defmodule Polis.AccessPin.Throttle do
   def now, do: System.monotonic_time(:second)
 
   @impl true
-  def init(nil), do: {:ok, %{ips: %{}, global: []}}
+  def init(nil), do: {:ok, %{ips: %{}, global: [], reserves: []}}
 
   @impl true
   def handle_call({:claim, ip, now}, _from, state) do
@@ -72,7 +73,8 @@ defmodule Polis.AccessPin.Throttle do
         fails = old.fails + 1
         until = if fails >= @free, do: now + min(@base * Integer.pow(2, fails - @free), @cap)
         entry = %{fails: fails, last: now, until: until, reserved: old.reserved + 1}
-        {:reply, :ok, %{state | ips: Map.put(state.ips, ip, entry)}}
+        {:reply, :ok,
+         %{state | ips: Map.put(state.ips, ip, entry), reserves: [now | state.reserves]}}
 
       {_kind, wait} when wait > 0 ->
         {:reply, {:wait, wait}, state}
@@ -101,7 +103,7 @@ defmodule Polis.AccessPin.Throttle do
     {:reply, :ok, %{state | ips: Map.delete(state.ips, ip), global: global}}
   end
 
-  def handle_call(:reset, _from, _state), do: {:reply, :ok, %{ips: %{}, global: []}}
+  def handle_call(:reset, _from, _state), do: {:reply, :ok, %{ips: %{}, global: [], reserves: []}}
 
   defp ip_wait(state, ip, now) do
     case state.ips[ip] do
@@ -120,11 +122,15 @@ defmodule Polis.AccessPin.Throttle do
         {:normal, own}
 
       global ->
-        if own == 0 and reserve?(state.ips[ip]),
+        if own == 0 and reserve?(state.ips[ip]) and reserve_room?(state),
           do: {:reserve, 0},
           else: {:normal, max(global, own)}
     end
   end
+
+  # At most @global_limit reserve tries a minute across the whole box, or a
+  # device claiming a subnet of addresses would collect two guesses each.
+  defp reserve_room?(%{reserves: used}), do: length(used) < @global_limit
 
   defp reserve?(nil), do: true
   defp reserve?(%{reserved: used}), do: used > 0 and used < @reserve
@@ -147,6 +153,11 @@ defmodule Polis.AccessPin.Throttle do
       end)
       |> Map.new()
 
-    %{state | ips: ips, global: Enum.filter(state.global, fn {at, _ip} -> at > now - @window end)}
+    %{
+      state
+      | ips: ips,
+        global: Enum.filter(state.global, fn {at, _ip} -> at > now - @window end),
+        reserves: Enum.filter(state.reserves, &(&1 > now - @window))
+    }
   end
 end

@@ -256,6 +256,26 @@ defmodule Polis.AccessPinTest do
       assert Throttle.peek({10, 1, 0, 3}, 2_005) > 0
     end
 
+    test "the spare tries are capped too: 40 a minute across the box" do
+      for n <- 1..40, do: assert(:ok = Throttle.claim({10, 1, 0, n}, 2_000))
+
+      # 20 fresh addresses use both spare tries each: 40 reserve tries.
+      for n <- 1..20 do
+        fresh = {10, 2, 0, n}
+        assert :ok = Throttle.claim(fresh, 2_005)
+        assert :ok = Throttle.claim(fresh, 2_005)
+      end
+
+      # The 41st, from an address that has not tried at all, waits.
+      newcomer = {10, 3, 0, 1}
+      assert {:wait, wait} = Throttle.claim(newcomer, 2_005)
+      assert wait == 55
+      assert Throttle.peek(newcomer, 2_005) == 55
+
+      # A minute on, the reserve is free again.
+      assert :ok = Throttle.claim(newcomer, 2_061)
+    end
+
     test "a right PIN gives back its own failure to the box, not another address's" do
       Throttle.claim({10, 3, 0, 1}, 3_000)
       for n <- 1..39, do: Throttle.claim({10, 4, 0, n}, 3_001)

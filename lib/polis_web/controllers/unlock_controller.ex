@@ -61,5 +61,38 @@ defmodule PolisWeb.UnlockController do
     render(conn, :show, error: error, wait: wait, locale: conn.assigns.locale)
   end
 
-  defp peer(conn), do: conn.remote_ip
+  @doc """
+  The address the throttle counts. Without `POLIS_BEHIND_PROXY=1` it is the
+  socket's peer, headers ignored. Behind a proxy every peer is the proxy, so
+  the last `X-Forwarded-For` entry (the one the proxy itself appended) is used,
+  then `X-Real-IP`, then the peer when neither parses.
+  """
+  def peer(conn) do
+    if Application.get_env(:polis, :behind_proxy, false) do
+      forwarded_for(conn) || real_ip(conn) || conn.remote_ip
+    else
+      conn.remote_ip
+    end
+  end
+
+  defp forwarded_for(conn) do
+    case conn |> get_req_header("x-forwarded-for") |> List.last() do
+      nil -> nil
+      value -> value |> String.split(",") |> List.last() |> parse_ip()
+    end
+  end
+
+  defp real_ip(conn) do
+    case get_req_header(conn, "x-real-ip") do
+      [value | _] -> parse_ip(value)
+      [] -> nil
+    end
+  end
+
+  defp parse_ip(value) do
+    case :inet.parse_address(String.to_charlist(String.trim(value))) do
+      {:ok, ip} -> ip
+      {:error, _} -> nil
+    end
+  end
 end
