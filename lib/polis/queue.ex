@@ -45,7 +45,10 @@ defmodule Polis.Queue do
   Queues a job: `%{tournament, tournament_name, round, rev, what, copies,
   payload}` (`payload` nil for a test page). Returns the job id.
   """
-  def enqueue(attrs), do: GenServer.call(__MODULE__, {:enqueue, attrs})
+  # The layout of a big round on a slow box can take a while, and a caller
+  # that gives up early would think the job was never made while it was:
+  # the round would then be printed again when the server resends it.
+  def enqueue(attrs), do: GenServer.call(__MODULE__, {:enqueue, attrs}, 30_000)
 
   @doc "The test page, on the chosen printer."
   def test_print do
@@ -66,7 +69,7 @@ defmodule Polis.Queue do
   def job(id), do: Enum.find(jobs(), &(&1.id == id))
 
   @doc "A job again: a new job with the same source. `{:ok, id}` or `:error`."
-  def reprint(id), do: GenServer.call(__MODULE__, {:reprint, id})
+  def reprint(id), do: GenServer.call(__MODULE__, {:reprint, id}, 30_000)
 
   @doc "A printer was chosen: what waited for one is queued."
   def printer_chosen, do: GenServer.call(__MODULE__, :printer_chosen)
@@ -204,7 +207,9 @@ defmodule Polis.Queue do
         {:reply, {:ok, path}, state}
 
       job = Enum.find(state.jobs, &(&1.id == id)) ->
-        case write_pdf(job, Station.paper(), Station.printer()) do
+        # A job whose sheet could not be laid out has no PDF; "Open PDF" on
+        # it is a 404, not a second go at the same raise inside the queue.
+        case safe_write_pdf(job) do
           {:ok, _doc} -> {:reply, {:ok, path}, state}
           :error -> {:reply, :error, state}
         end
@@ -269,6 +274,14 @@ defmodule Polis.Queue do
     error ->
       Logger.error("polis: job #{job.id} could not be laid out: " <> Exception.message(error))
       {:error, "the sheet could not be laid out: " <> Exception.message(error)}
+  end
+
+  defp safe_write_pdf(job) do
+    write_pdf(job, Station.paper(), Station.printer())
+  rescue
+    error ->
+      Logger.warning("polis: no PDF for job #{job.id}: " <> Exception.message(error))
+      :error
   end
 
   defp print_job(job, paper, printer) do

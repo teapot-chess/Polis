@@ -53,8 +53,7 @@ defmodule PolisWeb.StationLive do
        drafts: %{},
        station_notes: %{},
        pin_form: to_form(%{"value" => ""}, as: :pin),
-       pin_error: nil,
-       pin: pin_for(socket)
+       pin_error: nil
      )
      |> load()}
   end
@@ -446,7 +445,9 @@ defmodule PolisWeb.StationLive do
       notice: Updates.notice(),
       install_kind: Updates.install_kind(),
       update_mode: Updates.mode(),
-      last_update: Updates.last_result()
+      last_update: Updates.last_result(),
+      # Read again each time: another tab on this machine may have changed it.
+      pin: pin_for(socket)
     )
     |> load_autostart()
   end
