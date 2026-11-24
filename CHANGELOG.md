@@ -15,6 +15,8 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-24
+
 - [Fix] **"Open PDF" on a sheet that could not be laid out no longer takes the station down.** The queue caught the bad round when it arrived and said so in the list, then laid it out again, uncaught, the moment somebody clicked "Open PDF" on that very line. The queue fell over, took the page with it for every open browser, and three curious clicks in five seconds stopped Polis altogether. It is a plain "Not Found" now, which is what a PDF that does not exist has always been.
 - [Fix] **A big round on a slow box is printed once.** The line gave the queue five seconds to lay out a round; a small box laying out a big round while busy with something else can take longer, so the line gave up, decided the round had never been queued, and printed it again when the server sent it next. It waits thirty seconds now, which is longer than any layout and shorter than anybody's patience.
 - [Fix] **The station's own page shows the PIN as it is, not as it was.** A second tab on the same machine that changed the PIN left the first one showing the old one until somebody reloaded it. It is read again with everything else the page refreshes.
