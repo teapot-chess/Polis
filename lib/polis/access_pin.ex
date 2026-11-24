@@ -99,6 +99,7 @@ defmodule Polis.AccessPin do
   it. Returns the PIN. Called at start (`Polis.AccessPin.Boot`) and by tests.
   """
   @spec boot() :: String.t()
+  # sobelow_skip ["Traversal.FileModule"]
   def boot do
     pin =
       case read() do
@@ -203,6 +204,7 @@ defmodule Polis.AccessPin do
   # --- the file ------------------------------------------------------------------------
 
   # Only a regular file is read. A symlink, a folder, anything else is not a PIN.
+  # sobelow_skip ["Traversal.FileModule"]
   defp read do
     path = path()
 
@@ -226,6 +228,7 @@ defmodule Polis.AccessPin do
   end
 
   @doc false
+  # sobelow_skip ["Traversal.FileModule"]
   def write(pin) do
     path = path()
     tmp = path <> ".new"
@@ -269,6 +272,7 @@ defmodule Polis.AccessPin do
   Returns `:none`, `:set`, `:new` or `{:refused, reason}`.
   """
   @spec consume_request() :: :none | :set | :new | {:refused, term()}
+  # sobelow_skip ["Traversal.FileModule"]
   def consume_request do
     path = request_path()
 

@@ -6,6 +6,7 @@ defmodule PolisWeb.JobController do
 
   use PolisWeb, :controller
 
+  # sobelow_skip ["Traversal.SendFile"]
   def pdf(conn, %{"id" => id}) do
     with %{} = job <- Polis.Queue.job(id),
          {:ok, path} <- Polis.Queue.pdf(job.id) do

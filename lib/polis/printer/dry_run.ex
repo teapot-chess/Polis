@@ -23,6 +23,7 @@ defmodule Polis.Printer.DryRun do
   def default_printer, do: nil
 
   @impl true
+  # sobelow_skip ["Traversal.FileModule"]
   def print(job) do
     dir = Path.join(Polis.Paths.data(), "dry-run")
     File.mkdir_p!(dir)

@@ -73,8 +73,13 @@ jobs:
           mix hex.audit
 
       - name: Sobelow
-        # Findings reviewed in context live in .sobelow-skips; a NEW finding fails here.
+        # Reviewed findings are skipped inline (sobelow_skip) or ignored in .sobelow-conf; a NEW finding fails here.
         run: mix sobelow --config
+
+      - name: Gettext catalogues
+        run: |
+          mix i18n.check
+          mix i18n.check plugins/openpairings_polis/priv/gettext
 
       - name: Check formatting
         run: mix format --check-formatted

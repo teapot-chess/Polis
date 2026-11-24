@@ -40,6 +40,7 @@ defmodule Polis.Printer.Windows do
   end
 
   @impl true
+  # sobelow_skip ["Traversal.FileModule"]
   def print(job) do
     file = job_file(job)
     File.write!(file, Jason.encode!(job_json(job)))

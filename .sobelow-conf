@@ -1,7 +1,10 @@
 # Sobelow (Phoenix security scanner) - `mix sobelow --config`, run by precommit and CI.
 #
-# skip: true  - findings recorded in .sobelow-skips are accepted. Every entry there
-# was read in context and is a false positive:
+# Reviewed false positives are skipped INLINE, with a `# sobelow_skip ["Category.Name"]`
+# comment directly above the function that holds the finding. They travel with the
+# code, so an edit above them cannot unsuppress them (the old line-based
+# .sobelow-skips fingerprint file could, and did). `skip: true` is what makes
+# Sobelow read those comments. Every one was read in context:
 #   * Traversal.* - paths are built by the app (its data dir, temp files, a
 #     bundled catalogue) or looked up by id in the app's own listing before they
 #     are touched; no request string is ever joined into a path.
@@ -20,10 +23,16 @@
 #   * Config.CSP - no script-src policy is set; Phoenix's default
 #     put_secure_browser_headers is on the browser pipeline. Reported, not fixed:
 #     it listens on localhost / behind the operator's own access layer only.
+#   * Config.HTTPS - TLS is not this app's job: it listens on localhost / behind the
+#     operator's own access layer, and force_ssl in config/prod.exs is not set.
+#
+# Config.* findings (CSP, CSWH, HTTPS) cannot take an inline comment: Sobelow
+# reads them from config files and the router, not from a function. They are
+# ignored by name below, on the reasoning in the Config.* bullets above.
 [
   exit: :low,
   format: "txt",
-  ignore: [],
+  ignore: ["Config.CSP", "Config.CSWH", "Config.HTTPS"],
   ignore_files: [],
   include_mix_tasks: false,
   include_scripts: false,

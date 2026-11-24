@@ -199,7 +199,7 @@ msgstr ""
 msgid "Pairings - round %{n} of %{total}"
 msgstr ""
 
-#: lib/polis_web/components.ex:34
+#: lib/polis_web/components.ex:35
 #, elixir-autogen, elixir-format
 msgid "Pairings, round %{n}"
 msgstr ""
@@ -219,7 +219,7 @@ msgstr ""
 msgid "Place cards"
 msgstr ""
 
-#: lib/polis_web/components.ex:35
+#: lib/polis_web/components.ex:36
 #, elixir-autogen, elixir-format
 msgid "Place cards, round %{n}"
 msgstr ""
@@ -300,7 +300,7 @@ msgid "Start Polis when Windows starts"
 msgstr ""
 
 #: lib/polis/layout.ex:87
-#: lib/polis_web/components.ex:33
+#: lib/polis_web/components.ex:34
 #: lib/polis_web/live/station_live.ex:782
 #, elixir-autogen, elixir-format
 msgid "Test print"
@@ -409,12 +409,12 @@ msgstr ""
 msgid "connected"
 msgstr ""
 
-#: lib/polis_web/components.ex:30
+#: lib/polis_web/components.ex:31
 #, elixir-autogen, elixir-format
 msgid "failed: %{why}"
 msgstr ""
 
-#: lib/polis_web/components.ex:27
+#: lib/polis_web/components.ex:28
 #, elixir-autogen, elixir-format
 msgid "failed: the station stopped while it printed"
 msgstr ""
@@ -439,17 +439,17 @@ msgstr ""
 msgid "not connected"
 msgstr ""
 
-#: lib/polis_web/components.ex:24
+#: lib/polis_web/components.ex:25
 #, elixir-autogen, elixir-format
 msgid "printed"
 msgstr ""
 
-#: lib/polis_web/components.ex:23
+#: lib/polis_web/components.ex:24
 #, elixir-autogen, elixir-format
 msgid "printing"
 msgstr ""
 
-#: lib/polis_web/components.ex:22
+#: lib/polis_web/components.ex:23
 #, elixir-autogen, elixir-format
 msgid "queued"
 msgstr ""
@@ -494,7 +494,7 @@ msgstr ""
 msgid "the server went quiet"
 msgstr ""
 
-#: lib/polis_web/components.ex:21
+#: lib/polis_web/components.ex:22
 #, elixir-autogen, elixir-format
 msgid "waiting for a printer"
 msgstr ""
@@ -728,7 +728,7 @@ msgstr ""
 msgid "Player list"
 msgstr ""
 
-#: lib/polis_web/components.ex:37
+#: lib/polis_web/components.ex:38
 #, elixir-autogen, elixir-format
 msgid "Player list, round %{n}"
 msgstr ""
@@ -773,7 +773,7 @@ msgstr ""
 msgid "Result slips"
 msgstr ""
 
-#: lib/polis_web/components.ex:38
+#: lib/polis_web/components.ex:39
 #, elixir-autogen, elixir-format
 msgid "Result slips, round %{n}"
 msgstr ""
@@ -785,7 +785,7 @@ msgid "Standings"
 msgstr ""
 
 #: lib/polis/layout.ex:496
-#: lib/polis_web/components.ex:36
+#: lib/polis_web/components.ex:37
 #, elixir-autogen, elixir-format
 msgid "Standings after round %{n}"
 msgstr ""
