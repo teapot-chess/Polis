@@ -4,6 +4,7 @@
   "server": "pairings.cloud",
   "tournament": {
     "id": 42,
-    "name": "Open Brugge"
+    "name": "Open Brugge",
+    "results": "https://openresults.cloud/t/open-brugge"
   }
 }

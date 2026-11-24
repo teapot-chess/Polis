@@ -15,6 +15,8 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-25
+
 - [Fix] **Behind a reverse proxy, one phone guessing wrong no longer locks the whole hall out of the PIN page.** With `POLIS_BEHIND_PROXY=1` every visitor arrives from the proxy's own address, so the throttle saw one very persistent person and treated everybody accordingly. It now counts the last `X-Forwarded-For` entry (the one the proxy appended, not the ones the client brought along), else `X-Real-IP`, else the proxy's address when neither is an address. Without the flag the headers are still ignored. The proxy has to set one of them; one that merely passes the client's own header through lets clients pick their bucket, which the README now says in so many words.
 - [Fix] **The spare tries for addresses that have not failed yet have a ceiling too.** They sat outside the forty-a-minute cap, so a device that claimed a whole subnet's worth of addresses got two extra guesses from each. The spare tries are now capped at forty a minute across the box; everything else about the counting is as it was.
 

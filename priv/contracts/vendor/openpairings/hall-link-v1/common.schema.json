@@ -44,7 +44,12 @@
       "required": ["id", "name"],
       "properties": {
         "id": {"$ref": "#/definitions/id"},
-        "name": {"type": "string"}
+        "name": {"type": "string"},
+        "results": {
+          "type": ["string", "null"],
+          "maxLength": 2000,
+          "description": "Optional. The tournament's public front page on the results site (`https://<results host>/t/<slug>`), or null when it is not public. Absent from a server older than this key: the device then changes nothing. Hall apps that show the live boards build their address from it."
+        }
       }
     },
     "room_names": {
