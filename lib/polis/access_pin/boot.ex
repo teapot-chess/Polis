@@ -10,6 +10,7 @@ defmodule Polis.AccessPin.Boot do
     %{id: __MODULE__, start: {__MODULE__, :start_link, [opts]}, restart: :temporary}
   end
 
+  # sobelow_skip ["Traversal.FileModule"]
   def start_link(_opts) do
     File.mkdir_p!(Application.fetch_env!(:polis, :data_dir))
     Polis.AccessPin.forget()

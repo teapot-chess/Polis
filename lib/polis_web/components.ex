@@ -7,6 +7,7 @@ defmodule PolisWeb.Components do
   @doc "The mark (`PolisWeb.Logo`): decorative, the name beside it says what it is."
   attr :class, :any, default: nil
 
+  # sobelow_skip ["XSS.Raw"]
   def logo(assigns) do
     assigns = assign(assigns, :inner, Phoenix.HTML.raw(PolisWeb.Logo.inner()))
 

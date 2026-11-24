@@ -1,8 +1,32 @@
 # The tests read files byte for byte (heredocs, the .po catalogue, capture
 # fixtures): a checkout with CRLF line endings fails three of them.
 * text=auto eol=lf
-*.pyc binary
 # cmd reads a batch file with LF endings until the day it does not.
 *.bat text eol=crlf
 *.bat.eex text eol=crlf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+# Binary: never touched by text normalisation or diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.icns binary
 *.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.xz binary
+*.img.xz binary
+*.db binary
+*.sqlite3 binary
+*.exe binary
+*.dll binary
+*.so binary
+*.pyc binary

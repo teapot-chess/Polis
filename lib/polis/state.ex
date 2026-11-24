@@ -193,6 +193,7 @@ defmodule Polis.State do
 
   # --- the file ---------------------------------------------------------------------
 
+  # sobelow_skip ["Traversal.FileModule"]
   defp read(path) do
     with {:ok, text} <- File.read(path),
          {:ok, %{} = data} <- Jason.decode(text) do
@@ -212,6 +213,7 @@ defmodule Polis.State do
   end
 
   @doc false
+  # sobelow_skip ["Traversal.FileModule"]
   def write(path, data) do
     tmp = path <> ".tmp"
     File.mkdir_p!(Path.dirname(path))

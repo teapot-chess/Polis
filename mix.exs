@@ -195,6 +195,8 @@ defmodule Polis.MixProject do
         "deps.audit",
         "hex.audit",
         "sobelow --config",
+        "i18n.check",
+        "i18n.check plugins/openpairings_polis/priv/gettext",
         "test"
       ]
     ]

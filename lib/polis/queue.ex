@@ -256,6 +256,7 @@ defmodule Polis.Queue do
   defp advance(state), do: state
 
   # The job's source on disk and its PDF, or why not.
+  # sobelow_skip ["Traversal.FileModule"]
   defp prepare(job, source) do
     with :ok <- File.write(source_file(job.id), Jason.encode!(source)),
          {:ok, _doc} <- write_pdf(job, Station.paper(), Station.printer()) do
@@ -318,6 +319,7 @@ defmodule Polis.Queue do
   # The newest fifty; the files of the rest go with them. Never one that
   # has not been printed yet (with the printer, waiting for it or for a
   # printer to be chosen): a sheet nobody has seen is not history.
+  # sobelow_skip ["Traversal.FileModule"]
   defp prune(state) do
     {keep, drop} = Enum.split(state.jobs, @keep)
 
@@ -342,6 +344,7 @@ defmodule Polis.Queue do
 
   @doc false
   # The document of a job, on `paper`, written as its PDF. `{:ok, doc}` or `:error`.
+  # sobelow_skip ["Traversal.FileModule"]
   def write_pdf(job, paper, printer) do
     with {:ok, source} <- read_source(job.id),
          {:ok, doc} <- layout(source, paper, printer) do
@@ -372,6 +375,7 @@ defmodule Polis.Queue do
 
   defp layout(_other, _paper, _printer), do: :error
 
+  # sobelow_skip ["Traversal.FileModule"]
   defp read_source(id) do
     with {:ok, text} <- File.read(source_file(id)),
          {:ok, source} <- Jason.decode(text) do
@@ -427,6 +431,7 @@ defmodule Polis.Queue do
     "failed" => :failed
   }
 
+  # sobelow_skip ["Traversal.FileModule"]
   defp read_list do
     with {:ok, text} <- File.read(list_file()),
          {:ok, list} when is_list(list) <- Jason.decode(text) do

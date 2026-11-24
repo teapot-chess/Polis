@@ -10,6 +10,7 @@ defmodule Polis.Paths do
   def state_file, do: Path.join(data(), "state.json")
   def jobs, do: ensure(Path.join(data(), "jobs"))
 
+  # sobelow_skip ["Traversal.FileModule"]
   defp ensure(dir) do
     File.mkdir_p!(dir)
     dir

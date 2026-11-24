@@ -218,6 +218,7 @@ defmodule Polis.LauncherDetails.CLI do
 
   @doc false
   # The last `n` lines of a file, reading only its end.
+  # sobelow_skip ["Traversal.FileModule"]
   def tail_file(path, n) do
     with {:ok, %{size: size}} <- File.stat(path),
          {:ok, file} <- File.open(path, [:read, :binary]) do
@@ -259,6 +260,7 @@ defmodule Polis.LauncherDetails.CLI do
     end
   end
 
+  # sobelow_skip ["Traversal.FileModule"]
   defp from_file do
     with dir when is_binary(dir) <- data_dir(),
          file = LauncherDetails.token_file(dir),
