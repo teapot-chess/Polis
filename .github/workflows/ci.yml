@@ -173,7 +173,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: env.SIBLINGS_TOKEN != ''
         with:
-          repository: teapot-chess/openpairings
+          repository: teapot-chess/openpairings-src
           token: ${{ secrets.SIBLINGS_TOKEN }}
           persist-credentials: false
           ref: main
