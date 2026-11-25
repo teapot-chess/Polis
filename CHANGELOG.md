@@ -15,6 +15,8 @@ tagged so that a version can be skimmed:
 
 ## [Unreleased]
 
+- [Removed] **Three functions nobody called.** A setter for the device name that no page offers, and two getters for the PIN length limits that the validator reads from its own attributes. The sweep found nothing slow; the station has never had enough data to be slow with.
+
 ## [0.7.0] - 2026-11-25
 
 - [Fix] **Behind a reverse proxy, one phone guessing wrong no longer locks the whole hall out of the PIN page.** With `POLIS_BEHIND_PROXY=1` every visitor arrives from the proxy's own address, so the throttle saw one very persistent person and treated everybody accordingly. It now counts the last `X-Forwarded-For` entry (the one the proxy appended, not the ones the client brought along), else `X-Real-IP`, else the proxy's address when neither is an address. Without the flag the headers are still ignored. The proxy has to set one of them; one that merely passes the client's own header through lets clients pick their bucket, which the README now says in so many words.
