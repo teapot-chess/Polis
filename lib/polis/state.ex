@@ -40,7 +40,6 @@ defmodule Polis.State do
 
   def device_id, do: call(:device_id)
   def device_name, do: call(:device_name)
-  def put_device_name(name) when is_binary(name), do: call({:put_device_name, name})
 
   # --- settings ---------------------------------------------------------------------
 
@@ -103,12 +102,6 @@ defmodule Polis.State do
   @impl true
   def handle_call(:device_id, _from, s), do: {:reply, s.data["device_id"], s}
   def handle_call(:device_name, _from, s), do: {:reply, s.data["device_name"], s}
-
-  def handle_call({:put_device_name, name}, _from, s) do
-    name = name |> String.trim() |> String.slice(0, 60)
-    name = if name == "", do: hostname(), else: name
-    {:reply, :ok, change(s, &Map.put(&1, "device_name", name))}
-  end
 
   def handle_call(:settings, _from, s), do: {:reply, s.data["settings"], s}
 

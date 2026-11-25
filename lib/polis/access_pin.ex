@@ -32,9 +32,6 @@ defmodule Polis.AccessPin do
   @min 6
   @max 64
 
-  def min_length, do: @min
-  def max_length, do: @max
-
   @doc "Where the PIN is kept."
   def path, do: Path.join(data_dir(), @file_name)
 
